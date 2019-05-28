@@ -72,6 +72,21 @@ class Database {
 		return emp;
 	}
 	
+	public void addLocation(Location l) {
+		DBCollection collection = database.getCollection("Location");
+		collection.insert(new BasicDBObject("_id", l.id).append("address", l.address).append("country", l.country).append("stock", new ArrayList<Ingredient>()));
+	}
+	
+	public Location findLocation(String id) {
+		DBCollection collection = database.getCollection("Location");
+		DBObject query = new BasicDBObject("_id", id);
+		DBCursor cursor = collection.find(query);
+		
+		Location l = new Location(cursor.one().get("_id").toString(), cursor.one().get("address").toString(), cursor.one().get("coutry").toString());
+		return l;
+	}
+	
+	
 	public static void main(String[] args) {
 		Database db = new Database();
 		
