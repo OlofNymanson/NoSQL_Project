@@ -2,6 +2,9 @@ package model;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -73,32 +76,70 @@ class Database {
 	}
 	
 	public void addLocation(Location l) {
-		DBCollection collection = database.getCollection("Location");
+		DBCollection collection = database.getCollection("location");
 		collection.insert(new BasicDBObject("_id", l.id).append("address", l.address).append("country", l.country).append("stock", new ArrayList<Ingredient>()));
 	}
 	
 	public Location findLocation(String id) {
-		DBCollection collection = database.getCollection("Location");
+		DBCollection collection = database.getCollection("location");
 		DBObject query = new BasicDBObject("_id", id);
 		DBCursor cursor = collection.find(query);
 		
-		Location l = new Location(cursor.one().get("_id").toString(), cursor.one().get("address").toString(), cursor.one().get("coutry").toString());
+		Location l = new Location(cursor.one().get("_id").toString(), cursor.one().get("address").toString(), cursor.one().get("country").toString());
 		return l;
 	}
 	
+	public void createOrder(Order o) {
+		DBCollection collection = database.getCollection("order");
+		collection.insert(new BasicDBObject("_id", o.id).append("empID", o.empID).append("locID", o.locID).append("memID", o.memID)
+				.append("_ts", o.ts).append("price", o.price).append("products", o.products));
+	}
+	
+	public Order findOrder(String id) {
+		DBCollection collection = database.getCollection("order");
+		DBObject query = new BasicDBObject("_id", id);
+		DBCursor cursor = collection.find(query);
+	
+		ArrayList<Product> products = new ArrayList<Product>(); //Denna är tom nu och egentligen ska den läsa in från databas, arbetar på det.
+		
+		Order o = new Order(cursor.one().get("_id").toString(), cursor.one().get("empID").toString(), cursor.one().get("locID").toString(), 
+				 cursor.one().get("memID").toString(), products);
+		return o;
+				
+	}
 	
 	public static void main(String[] args) {
 		Database db = new Database();
+//		
+//		//ADD EMPLOYEE
+//		db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "loc_malmö1"));
+//		System.out.println(db.findEmployee("emp_olny95").fName);
+//		
+//		//ADD MEMBER
+//		db.addMember(new Member("osar93", "Oscar", "Arréhn", "Hittepågatan", "Student", "1993-02-11"));
+//		Member m = db.findMember("osar93");
+//		System.out.println(m.fName + ", " + m.address);
 		
-		//ADD EMPLOYEE
-		db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "loc_malmö1"));
-		System.out.println(db.findEmployee("emp_olny95").fName);
+//		//Add Location
+//		ArrayList<Ingredient> stock = new ArrayList<Ingredient>();
+//		Location l = new Location("loc_malmö2", "Storgatan 2", "Skåneland");
+//		db.addLocation(l);
+	
+//		//Find Location
+//		Location fl = db.findLocation("loc_malmö2");
+//		System.out.println(fl.id);
+
+//		//Add Order
+//		ArrayList<Product> products = new ArrayList<Product>();
+//		Location fl = db.findLocation("loc_malmö2");
+//		Employee fe = db.findEmployee("emp_olny95");
+//		Member fm = db.findMember("osar93");
+//		Order o = new Order("ord_1", fe.id, fl.id, fm.SSN, products);
+//		db.createOrder(o);
+//		System.out.println(o.id);
 		
-		//ADD MEMBER
-		db.addMember(new Member("osar93", "Oscar", "Arréhn", "Hittepågatan", "Student", "1993-02-11"));
-		Member m = db.findMember("osar93");
-		System.out.println(m.fName + ", " + m.address);
-		
-		
+		//Find Order
+		Order o = db.findOrder("ord_1");
+		System.out.println(o.id);
 	}
 }
