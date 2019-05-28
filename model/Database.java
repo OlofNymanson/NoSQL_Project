@@ -86,6 +86,18 @@ class Database {
 		return l;
 	}
 	
+	public ArrayList<Product> getProducts() {
+		DBCollection collection = database.getCollection("Products");
+		DBCursor cursor = collection.find();
+		ArrayList<Product> productList = new ArrayList<Product>();
+		while(cursor.hasNext()) {
+			DBObject product = cursor.next();
+			productList.add(new Product((String)product.get("id"), (String)product.get("name"), (ArrayList<Ingredient>)product.get("ingredients")));
+		}
+		
+		return productList;
+	}
+	
 	
 	public static void main(String[] args) {
 		Database db = new Database();
