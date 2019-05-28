@@ -72,18 +72,32 @@ class Database {
 		return emp;
 	}
 	
+	public void addLocation(Location l) {
+		DBCollection collection = database.getCollection("Location");
+		collection.insert(new BasicDBObject("_id", l.id).append("address", l.address).append("country", l.country).append("stock", new ArrayList<Ingredient>()));
+	}
+	
+	public Location findLocation(String id) {
+		DBCollection collection = database.getCollection("Location");
+		DBObject query = new BasicDBObject("_id", id);
+		DBCursor cursor = collection.find(query);
+		
+		Location l = new Location(cursor.one().get("_id").toString(), cursor.one().get("address").toString(), cursor.one().get("coutry").toString());
+		return l;
+	}
+	
 	
 	public static void main(String[] args) {
 		Database db = new Database();
 		
 		//ADD EMPLOYEE
-//		db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "loc_malmö1"));
-//		System.out.println(db.findEmployee("emp_olny95").fName);
+		db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "loc_malmö1"));
+		System.out.println(db.findEmployee("emp_olny95").fName);
 		
 		//ADD MEMBER
-//		db.addMember(new Member("osar93", "Oscar", "Arréhn", "Hittepågatan", "Student", "1993-02-11"));
-//		Member m = db.findMember("osar93");
-//		System.out.println(m.fName + ", " + m.address);
+		db.addMember(new Member("osar93", "Oscar", "Arréhn", "Hittepågatan", "Student", "1993-02-11"));
+		Member m = db.findMember("osar93");
+		System.out.println(m.fName + ", " + m.address);
 		
 		
 	}
