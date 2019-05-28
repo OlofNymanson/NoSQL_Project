@@ -108,6 +108,32 @@ class Database {
 				
 	}
 	
+	public void addComment(Comment c) {
+		DBCollection collection = database.getCollection("Employee");
+		DBObject query = new BasicDBObject("id", c.employeeID);
+		DBCursor cursor = collection.find(query);
+		query.put("comment", c);
+	}
+	
+	public void addProduct(Product p) {
+		DBCollection collection = database.getCollection("Products");
+		collection.insert(new BasicDBObject("id", p.id).append("name", p.name).append("ingredients", p.ingredients));
+		
+	}
+	
+	
+	public ArrayList<Product> getProducts() {
+		DBCollection collection = database.getCollection("Products");
+		DBCursor cursor = collection.find();
+		ArrayList<Product> productList = new ArrayList<Product>();
+		while(cursor.hasNext()) {
+			DBObject product = cursor.next();
+			productList.add(new Product((String)product.get("id"), (String)product.get("name"), (ArrayList<Ingredient>)product.get("ingredients")));
+		}
+		return productList;
+	}
+	
+	
 	public static void main(String[] args) {
 		Database db = new Database();
 //		
