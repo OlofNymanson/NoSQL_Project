@@ -7,10 +7,21 @@ public class Product {
 	double price;
 	ArrayList<Ingredient> ingredients;
 	
-	public Product(String id, String name, double price, ArrayList<Ingredient> ingredients) {
+	public Product(String id, String name, ArrayList<Ingredient> ingredients) {
 		this.id = id;
 		this.name = name;
-		this.price = price;
 		this.ingredients = ingredients;
+		
+		this.price = calculatePrice();
+	}
+	
+	private double calculatePrice() {
+		double sum = 0;
+		
+		for(Ingredient i : ingredients) {
+			sum += i.price;
+		}
+		
+		return sum;
 	}
 }
