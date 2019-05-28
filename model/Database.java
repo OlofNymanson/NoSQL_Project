@@ -72,7 +72,6 @@ class Database {
 		return emp;
 	}
 	
-	
 	public static void main(String[] args) {
 		Database db = new Database();
 		
@@ -84,7 +83,7 @@ class Database {
 //		db.addMember(new Member("osar93", "Oscar", "Arréhn", "Hittepågatan", "Student", "1993-02-11"));
 //		Member m = db.findMember("osar93");
 //		System.out.println(m.fName + ", " + m.address);
-		
+
 		
 	}
 }
