@@ -66,6 +66,8 @@ public class DBHandler {
 //		dbh.addPersonToLocation(l1, p2);
 		
 //		dbh.findPersonInLocation(l1);
+		
+		//scoobidoo
 
 		System.out.println("DONE");
 	}

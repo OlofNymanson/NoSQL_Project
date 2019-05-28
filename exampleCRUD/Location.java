@@ -10,4 +10,6 @@ public class Location {
 		this.city = city;
 		this.id = id;
 	}
+	
+	//scoobidoo
 }
