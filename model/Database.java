@@ -230,9 +230,9 @@ public class Database {
 	
 	public void addComment(Comment c) {
 		DBCollection collection = database.getCollection("Employee");
-		DBObject query = new BasicDBObject("id", c.employeeID);
-		DBCursor cursor = collection.find(query);
-		query.put("comment", c);
+		DBObject query = new BasicDBObject("_id", c.employeeID);
+		DBObject update = new BasicDBObject("$set", new BasicDBObject("comment", c.comment));
+		collection.findAndModify(query, update);
 	}
 	
 	public void addProduct(Product p) {
@@ -297,20 +297,24 @@ public class Database {
 //		Order o = db.findOrder("ord_1");
 //		System.out.println(o.id);
 		
-		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
-		ArrayList<Product> products = new ArrayList<Product>();
+		//Take from stock:
+//		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
+//		ArrayList<Product> products = new ArrayList<Product>();
+//		
+//		ingredients.add(new Ingredient("Milk", 2.5, 2));
+//		ingredients.add(new Ingredient("Coffee Beans", 2.5, 2));
+//		
+//		
+//		products.add(new Product("1", "Coffee", ingredients));
+//		
+//		try {
+//			db.takeFromStock(new Order("1", "1", "loc_malmö1", "1", products));
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 		
-		ingredients.add(new Ingredient("Milk", 2.5, 2));
-		ingredients.add(new Ingredient("Coffee Beans", 2.5, 2));
-		
-		
-		products.add(new Product("1", "Coffee", ingredients));
-		
-		try {
-			db.takeFromStock(new Order("1", "1", "loc_malmö1", "1", products));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		//Comment
+//		db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
 		
 		System.out.println("X");
 	}
