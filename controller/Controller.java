@@ -1,4 +1,6 @@
 package controller;
+import java.util.ArrayList;
+
 import model.Comment;
 import model.Database;
 import model.Employee;
@@ -11,10 +13,7 @@ public class Controller {
 	public static Database dbHelper = new Database();
 	
 	public static void main(String[] args) {
-			if(!dbHelper.init()) {
-				System.out.println("Fatal error: starting database");
-				System.exit(0);
-			}
+		
 	}
 	
 	public static ArrayList<Location> getLocations() {
@@ -46,8 +45,8 @@ public class Controller {
 		dbHelper.addComment(c);
 	}
 	
-	public static void addIngredient(String name, double price, double quantity) {
-		
+	public static void addIngredient(String name, double price, double quantity, Location l) {
+		Ingredient i = new Ingredient(name, price, quantity);
 		dbHelper.addToStock(l, i);
 	}
 	

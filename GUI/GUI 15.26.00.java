@@ -8,12 +8,10 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 
 import javax.swing.*;
 
 import controller.Controller;
-import model.Location;
 
 
 public class GUI extends JFrame{
@@ -270,33 +268,21 @@ public class GUI extends JFrame{
 		locationFrame.setVisible(true);
 		locationFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
-		
-		
+	
 	private void addIngredient() {
-		final JFrame ingredientFrame = new JFrame("Add ingredient");
-		final ArrayList<Location> locations = Controller.getLocations();
-		String[] loco = new String[locations.size()];
-		for(int i = 0; i <= locations.size();i++) {
-			loco[i] = locations.get(i).address;
-		}
-		
-		final JComboBox cbLocation = new JComboBox(loco);
+		final JFrame ingredientFrame = new JFrame("Add Ingredient");
 		JButton addBtn = new JButton("Add Ingredient");
 		JButton backBtn = new JButton("Back");
 		JLabel lblName = new JLabel("Ingredient name:");
 		JLabel lblPrice = new JLabel("Price:");
-		JLabel lblQuantity = new JLabel("Quantity:");
-		JLabel lblLocations = new JLabel("Locations");
 		final JTextField tfName = new JTextField();
 		final JTextField tfPrice = new JTextField();
-		final JTextField tfQuan = new JTextField();
 		ingredientFrame.dispatchEvent(new WindowEvent(ingredientFrame, WindowEvent.WINDOW_CLOSING));
 		ingredientFrame.setLocation(dim.width/2-ingredientFrame.getSize().width/2, dim.height/2-ingredientFrame.getSize().height/2);
 		
 		addBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
 		    	//add to db
-		    		Controller.addIngredient(tfName.getText(), Double.parseDouble(tfPrice.getText()), Double.parseDouble(tfQuan.getText()), locations.get(cbLocation.getSelectedIndex()));
 		    		ingredientFrame.setVisible(false);
 		    		new GUI();
 		    }  
@@ -309,16 +295,11 @@ public class GUI extends JFrame{
 	    }  
 	    });  
 		
-		ingredientFrame.setLayout(new GridLayout(6,2));
+		ingredientFrame.setLayout(new GridLayout(4,2));
 		ingredientFrame.add(lblName);
 		ingredientFrame.add(tfName);
 		ingredientFrame.add(lblPrice);
 		ingredientFrame.add(tfPrice);
-		ingredientFrame.add(lblQuantity);
-		ingredientFrame.add(tfQuan);
-		ingredientFrame.add(lblLocations);
-		ingredientFrame.add(cbLocation);
-		
 		ingredientFrame.add(addBtn);
 		ingredientFrame.add(backBtn);
 		
