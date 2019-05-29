@@ -17,27 +17,37 @@ public class Controller {
 			}
 	}
 	
-	public static void addMember(Member m) {
+	public static ArrayList<Location> getLocations() {
+		return null; //todo
+	}
+	
+	public static void addMember(String firstName, String lastName, String address, String occupation, String SSN) {
+		Member m = new Member(null, firstName, lastName, address, occupation, SSN);
 		dbHelper.addMember(m);
 	}
 	
-	public static void addEmployee(Employee e) {
+	public static void addEmployee(String firstName, String lastName, String location) {
+		Employee e = new Employee(null, firstName, lastName, location);
 		dbHelper.addEmployee(e);
 	}
 	
-	public static void addLocation(Location l) {
+	public static void addLocation(String country, String address) {
+		Location l = new Location(null, country, address);
 		dbHelper.addLocation(l);
 	}
 	
-	public static void addEmployer(Employer e) {
+	public static void addEmployer(String firstName, String lastName) {
+		Employer e = new Employer(null, firstName, lastName);
 		dbHelper.addEmployer(e);
 	}
 	
-	public static void addComment(Comment c) {
+	public static void addComment(String employer, String employee, String comment) {
+		Comment c = new Comment(employer, employee, comment);
 		dbHelper.addComment(c);
 	}
 	
-	public static void addIngredient(Ingredient i, Location l) {
+	public static void addIngredient(String name, double price, double quantity) {
+		
 		dbHelper.addToStock(l, i);
 	}
 	

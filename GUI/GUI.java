@@ -11,11 +11,13 @@ import java.text.SimpleDateFormat;
 
 import javax.swing.*;
 
+import controller.Controller;
+
 
 public class GUI extends JFrame{
 	
 	private Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-	private Controller controller = new Controller();
+	//private Controller controller = new Controller();
 	
 	public GUI() {
 		final JFrame frame = new JFrame("BEAVERCOFFEE");
@@ -327,7 +329,7 @@ public class GUI extends JFrame{
 		    		JOptionPane.showMessageDialog(null, "Comment cannot be longer than 300 chars");
 		    	}
 		    	else {
-		    	//add to db
+		    		Controller.addComment(tfBy.getText(), tfId.getText(), text);
 		    		commentFrame.setVisible(false);
 		    		new GUI();
 		    	}
@@ -372,6 +374,7 @@ public class GUI extends JFrame{
 		addBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){  
 		    		System.out.println("Employer added");
+		    		Controller.addEmployer(tfFName.getText(), tfLName.getText());
 		    		employerFrame.setVisible(false);
 		    		new GUI();
 		    }  
@@ -415,6 +418,7 @@ public class GUI extends JFrame{
 		addBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){  
 		    		System.out.println("Employee added");
+		    		Controller.addLocation(tfCountry.getText(), tfAddress.getText());
 		    		locationFrame.setVisible(false);
 		    		new GUI();
 		    }  
@@ -470,6 +474,7 @@ public class GUI extends JFrame{
 		
 		backBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){  
+		    	Controller.addEmployee(tfFname.getText(), tfLname.getText(), tfLocation.getText());
 	    		employeeFrame.setVisible(false);
 	    		new GUI();
 	    }  
@@ -516,6 +521,7 @@ public class GUI extends JFrame{
 		addBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){  
 		    		System.out.println("Member added");
+		    		Controller.addMember(tfFname.getText(), tfLname.getText(), tfAddress.getText(), tfOccupation.getText(), tfSSN.getText());
 		    		memberFrame.setVisible(false);
 		    		new GUI();
 		    }  
