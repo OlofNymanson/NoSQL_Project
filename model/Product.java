@@ -18,8 +18,12 @@ public class Product {
 	private double calculatePrice() {
 		double sum = 0;
 		
-		for(Ingredient i : ingredients) {
-			sum += i.price;
+		if(ingredients != null) {
+			for(Ingredient i : ingredients) {
+				sum += i.price;
+			}
+		}else {
+			System.out.println("Ingredients is null");
 		}
 		
 		return sum;

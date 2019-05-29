@@ -36,57 +36,123 @@ class Database {
 		DBObject query = new BasicDBObject("_id", id);
 		DBCursor cursor = collection.find(query);
 
-		Member m = new Member((String)cursor.one().get("_id"), (String)cursor.one().get("fName"), (String)cursor.one().get("lName"),
-				(String)cursor.one().get("address"), (String)cursor.one().get("occupation"), (String)cursor.one().get("SSN"));
-		
+		Member m = new Member((String) cursor.one().get("_id"), (String) cursor.one().get("fName"),
+				(String) cursor.one().get("lName"), (String) cursor.one().get("address"),
+				(String) cursor.one().get("occupation"), (String) cursor.one().get("SSN"));
+
 		return m;
 	}
-	
+
 	public void addEmployee(Employee emp) {
 		DBCollection collection = database.getCollection("Employee");
-		collection.insert(new BasicDBObject("_id", emp.id).append("fName", emp.fName)
-				.append("lName", emp.lName).append("locationID", emp.locationID));
+		collection.insert(new BasicDBObject("_id", emp.id).append("fName", emp.fName).append("lName", emp.lName)
+				.append("locationID", emp.locationID));
 	}
-	
+
 	public Employee findEmployee(String id) {
 		DBCollection collection = database.getCollection("Employee");
 		DBObject query = new BasicDBObject("_id", id);
 		DBCursor cursor = collection.find(query);
-		
-		Employee emp = new Employee((String)cursor.one().get("_id"), (String)cursor.one().get("fName"),
-				(String)cursor.one().get("lName"), (String)cursor.one().get("locationID"));
-		
+
+		Employee emp = new Employee((String) cursor.one().get("_id"), (String) cursor.one().get("fName"),
+				(String) cursor.one().get("lName"), (String) cursor.one().get("locationID"));
+
 		return emp;
 	}
-	
+
 	public void addEmployer(Employer emp) {
 		DBCollection collection = database.getCollection("Employer");
 		collection.insert(new BasicDBObject("_id", emp.id).append("fName", emp.fName).append("lName", emp.lName));
 	}
-	
+
 	public Employer findEmployer(String id) {
 		DBCollection collection = database.getCollection("Employer");
 		DBObject query = new BasicDBObject("_id", id);
 		DBCursor cursor = collection.find(query);
-		
-		Employer emp = new Employer((String)cursor.one().get("_id"), (String)cursor.one().get("fName"),
-				(String)cursor.one().get("lName"));
-		
+
+		Employer emp = new Employer((String) cursor.one().get("_id"), (String) cursor.one().get("fName"),
+				(String) cursor.one().get("lName"));
+
 		return emp;
 	}
-	
+
 	public void addLocation(Location l) {
-		DBCollection collection = database.getCollection("location");
-		collection.insert(new BasicDBObject("_id", l.id).append("address", l.address).append("country", l.country).append("stock", new ArrayList<Ingredient>()));
+		DBCollection collection = database.getCollection("Location");
+		collection.insert(new BasicDBObject("_id", l.id).append("address", l.address).append("country", l.country)
+				.append("stock", new ArrayList<Ingredient>()));
 	}
-	
+
 	public Location findLocation(String id) {
 		DBCollection collection = database.getCollection("location");
 		DBObject query = new BasicDBObject("_id", id);
 		DBCursor cursor = collection.find(query);
-		
-		Location l = new Location(cursor.one().get("_id").toString(), cursor.one().get("address").toString(), cursor.one().get("country").toString());
+
+		Location l = new Location(cursor.one().get("_id").toString(), cursor.one().get("country").toString(),
+				cursor.one().get("address").toString());
 		return l;
+	}
+
+	/*
+	 * Adds ingredient to locations stock
+	 * If stock already has ingredient, the new quantity is added to the old ingredients quantity
+	 */
+	public void addToStock(String locationID, Ingredient ingredient) {
+		DBCollection collection = database.getCollection("Location");
+
+		DBObject locQuery = null;
+		DBObject update = null;
+		
+		ArrayList<Ingredient> locationStock = getStock(locationID);
+		
+		if (alreadyInStock(locationStock, ingredient.name)) {
+
+			locQuery = new BasicDBObject("_id", locationID).append("stock", new BasicDBObject("$elemMatch", new BasicDBObject("name", "Milk")));
+			
+			double currentQuantity = 0;
+			
+			for(Ingredient i : locationStock) {
+				if(i.name.equals(ingredient.name)) {
+					currentQuantity = i.quantity;
+				}
+			}
+			
+			update = new BasicDBObject("$set", new BasicDBObject("stock.$.quantity", currentQuantity + ingredient.quantity)); //find current ingredient quantity and add
+			
+		} else {
+			locQuery = new BasicDBObject("_id", locationID);
+			update = new BasicDBObject("$push",
+					new BasicDBObject("stock", new BasicDBObject("name", ingredient.name)
+							.append("price", ingredient.price).append("quantity", ingredient.quantity)));
+		}
+
+		collection.findAndModify(locQuery, update);
+	}
+
+	public ArrayList<Ingredient> getStock(String locationID) {
+		ArrayList<Ingredient> stock = new ArrayList<Ingredient>();
+		DBCollection collection = database.getCollection("Location");
+
+		DBObject query = new BasicDBObject("_id", locationID);
+		DBCursor cursor = collection.find(query);
+
+		ArrayList<DBObject> list = (ArrayList<DBObject>) cursor.one().get("stock");
+
+		for (DBObject dbo : list) {
+			stock.add(
+					new Ingredient((String) dbo.get("name"), (Double) dbo.get("price"), (Double) dbo.get("quantity")));
+		}
+
+		return stock;
+	}
+
+	private boolean alreadyInStock(ArrayList<Ingredient> stock, String ingredientName) {
+		for (Ingredient i : stock) {
+			if (i.name.equals(ingredientName)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 	
 	public void createOrder(Order o) {
@@ -100,7 +166,11 @@ class Database {
 		DBObject query = new BasicDBObject("_id", id);
 		DBCursor cursor = collection.find(query);
 	
-		ArrayList<Product> products = new ArrayList<Product>(); //Denna är tom nu och egentligen ska den läsa in från databas, arbetar på det.
+		ArrayList<Product> products = new ArrayList<Product>();
+		while(cursor.hasNext()) {
+			DBObject product = cursor.next();
+			products.add(new Product((String)product.get("id"), (String)product.get("name"), (ArrayList<Ingredient>)product.get("ingredients")));
+		}
 		
 		Order o = new Order(cursor.one().get("_id").toString(), cursor.one().get("empID").toString(), cursor.one().get("locID").toString(), 
 				 cursor.one().get("memID").toString(), products);
