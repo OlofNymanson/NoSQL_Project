@@ -4,7 +4,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -106,13 +105,14 @@ class Database {
 		
 		if (alreadyInStock(locationStock, ingredient.name)) {
 
-			locQuery = new BasicDBObject("_id", locationID).append("stock", new BasicDBObject("$elemMatch", new BasicDBObject("name", "Milk")));
+			locQuery = new BasicDBObject("_id", locationID).append("stock", new BasicDBObject("$elemMatch", new BasicDBObject("name", ingredient.name)));
 			
 			double currentQuantity = 0;
 			
 			for(Ingredient i : locationStock) {
 				if(i.name.equals(ingredient.name)) {
 					currentQuantity = i.quantity;
+					break;
 				}
 			}
 			
@@ -121,7 +121,7 @@ class Database {
 		} else {
 			locQuery = new BasicDBObject("_id", locationID);
 			update = new BasicDBObject("$push",
-					new BasicDBObject("stock", new BasicDBObject("name", ingredient.name)
+						new BasicDBObject("stock", new BasicDBObject("name", ingredient.name)
 							.append("price", ingredient.price).append("quantity", ingredient.quantity)));
 		}
 
@@ -154,6 +154,56 @@ class Database {
 
 		return false;
 	}
+	
+	public void takeFromStock(Order order) throws Exception {
+		DBCollection collection = database.getCollection("Location");
+		
+		if(!enoughIngredientsInStock(order)) {
+			throw new Exception("Not enough ingredients!");
+		}
+		
+
+		double currentQuantity;
+		ArrayList<Ingredient> locationStock = getStock(order.locID);
+		
+		for(Product p : order.products) {
+			for(Ingredient ip : p.ingredients) {
+				currentQuantity = 0;
+				
+				for(Ingredient is : locationStock) {
+					if(ip.name.equals(is.name)) {
+						currentQuantity = is.quantity;
+						break;
+					}
+				}
+				
+				DBObject query = new BasicDBObject("_id", order.locID).append("stock", new BasicDBObject("$elemMatch", new BasicDBObject("name", ip.name)));
+				DBObject update = new BasicDBObject("$set", new BasicDBObject("stock.$.quantity", currentQuantity - ip.quantity));
+				collection.findAndModify(query, update);
+			}
+		}
+	}
+
+	
+	private boolean enoughIngredientsInStock(Order order) {
+		ArrayList<Ingredient> locationStock = getStock(order.locID);
+		
+		//förlåt
+		for(Ingredient ingredientInStock : locationStock) { 
+			for(Product p : order.products) {
+				for(Ingredient ingredientInProduct : p.ingredients) {
+					if(ingredientInProduct.name.equals(ingredientInStock.name)) {
+						if((ingredientInStock.quantity - ingredientInProduct.quantity) < 0) {
+							return false;
+						}
+					}
+				}
+			}
+		}
+		
+		return true;
+	}
+	
 	
 	public void createOrder(Order o) {
 		DBCollection collection = database.getCollection("order");
@@ -188,7 +238,6 @@ class Database {
 	public void addProduct(Product p) {
 		DBCollection collection = database.getCollection("Products");
 		collection.insert(new BasicDBObject("id", p.id).append("name", p.name).append("ingredients", p.ingredients));
-		
 	}
 	
 	
@@ -236,7 +285,22 @@ class Database {
 //		System.out.println(o.id);
 		
 		//Find Order
-		Order o = db.findOrder("ord_1");
-		System.out.println(o.id);
+//		Order o = db.findOrder("ord_1");
+//		System.out.println(o.id);
+		
+		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
+		ArrayList<Product> products = new ArrayList<Product>();
+		
+		ingredients.add(new Ingredient("Milk", 2.5, 2));
+		ingredients.add(new Ingredient("Coffee Beans", 2.5, 2));
+		
+		
+		products.add(new Product("1", "Coffee", ingredients));
+		
+		try {
+			db.takeFromStock(new Order("1", "1", "loc_malmö1", "1", products));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
