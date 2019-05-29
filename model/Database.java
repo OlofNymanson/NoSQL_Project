@@ -112,12 +112,12 @@ class Database {
 				
 	}
 	
-//	public void addComment(Comment c) {
-//		DBCollection collection = database.getCollection("Employee");
-//		DBObject query = new BasicDBObject("id", c.employeeID);
-//		DBCursor cursor = collection.find(query);
-//		query.put("comment", c);
-//	}
+	public void addComment(Comment c) {
+		DBCollection collection = database.getCollection("Employee");
+		DBObject query = new BasicDBObject("id", c.employeeID);
+		DBCursor cursor = collection.find(query);
+		query.put("comment", c);
+	}
 	
 	public void addProduct(Product p) {
 		DBCollection collection = database.getCollection("Products");
