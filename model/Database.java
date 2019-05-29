@@ -203,18 +203,16 @@ public class Database {
 		return productList;
 	}
 	
-	public void initStockandProducts() {
-		DBCollection collection = database.getCollection("products");
-//		collection.insert(new BasicDBObject("id", p.id).append("name", p.name).append("ingredients", p.ingredients));
-		
-	}
-	
-	public boolean init() {
-		return true;
+	public void init() {
+		Initializer i = new Initializer(database);
+		i.initProducts();
+		i.initLocationsAndStock();
 	}
 	
 	public static void main(String[] args) {
 		Database db = new Database();
+		
+		db.init(); //Kommer att dubbla alla produkter om körs flera gånger. 
 //		
 //		//ADD EMPLOYEE
 //		db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "loc_malmö1"));
@@ -246,5 +244,6 @@ public class Database {
 		//Find Order
 		Order o = db.findOrder("ord_1");
 		System.out.println(o.id);
+		
 	}
 }
