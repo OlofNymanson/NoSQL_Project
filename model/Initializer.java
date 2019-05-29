@@ -6,21 +6,21 @@ import com.mongodb.DBCollection;
 
 public class Initializer {
 	private DB database;
-	private DBCollection collection;
 	
 	public Initializer(DB database) {
 		this.database = database;
-		collection = database.getCollection("products");
 	}
 	
 	public void initProducts() {		
+		DBCollection collection = database.getCollection("Products");
+
 		{
 		BasicDBObject espressoRoast = new BasicDBObject("Espresso roast",
-				new BasicDBObject("price", 15).append("quantity", 1000));
+				new BasicDBObject("price", 15).append("quantity", 33));
 		BasicDBObject wholeBeanFrenchRoast = new BasicDBObject("Whole Bean French Roast",
-				new BasicDBObject("price", 12).append("quantity", 1000));
+				new BasicDBObject("price", 12).append("quantity", 123));
 		BasicDBObject wholeBeanLigtRoast = new BasicDBObject("Whole Bean Light Roast",
-				new BasicDBObject("price", 10).append("quantity", 1000));
+				new BasicDBObject("price", 10).append("quantity", 156));
 		
 		BasicDBObject[] ingredients = {espressoRoast, wholeBeanFrenchRoast, wholeBeanLigtRoast};
 		collection.insert(new BasicDBObject("name", "Whole bean coffee").append("ingredients", ingredients));
@@ -164,7 +164,7 @@ public class Initializer {
 		
 		{
 			BasicDBObject cream = new BasicDBObject("Cream",
-					new BasicDBObject("price", 55).append("quantity", 1000));
+					new BasicDBObject("price", 55).append("quantity", 11));
 			
 			BasicDBObject[] ingredients = {cream};
 			collection.insert(new BasicDBObject("name", "Whipped Cream").append("ingredients", ingredients));
@@ -172,7 +172,7 @@ public class Initializer {
 		
 		{			
 			BasicDBObject vanilla = new BasicDBObject("Vanilla",
-					new BasicDBObject("price", 10).append("quantity", 1000));
+					new BasicDBObject("price", 10).append("quantity", 11));
 			
 			BasicDBObject[] ingredients = {vanilla};
 			collection.insert(new BasicDBObject("name", "Vanilla Flavour").append("ingredients", ingredients));
@@ -180,7 +180,7 @@ public class Initializer {
 		
 		{	
 			BasicDBObject cream = new BasicDBObject("Cream",
-				new BasicDBObject("price", 55).append("quantity", 1000));
+				new BasicDBObject("price", 55).append("quantity", 12));
 		
 			BasicDBObject[] ingredients = {cream};
 			collection.insert(new BasicDBObject("name", "Irish Cream").append("ingredients", ingredients));
@@ -188,7 +188,7 @@ public class Initializer {
 	}
 	
 	public void initLocationsAndStock() {
-		DBCollection collection = database.getCollection("location");
+		DBCollection collection = database.getCollection("Location");
 		
 		BasicDBObject i2 = new BasicDBObject("Espresso roast",
 				new BasicDBObject("price", 15).append("quantity", 1000));
@@ -228,5 +228,22 @@ public class Initializer {
 		collection.insert(new BasicDBObject("address", "Amsterdam").append("country", "Netherlands").append("stock", stock));
 
 		collection.insert(new BasicDBObject("address", "Pisa").append("country", "Italy").append("stock", stock));
+	}
+	
+	public void initEmployees() {
+		DBCollection collection = database.getCollection("Employee");
+		
+		collection.insert(new BasicDBObject("fName", "Oscar").append("lName", "Ågren").append("location", "London"));
+		collection.insert(new BasicDBObject("fName", "Göran").append("lName", "Åkesson").append("location", "Malmö"));
+		collection.insert(new BasicDBObject("fName", "Nils").append("lName", "Malmgren").append("location", "Malmö"));
+		collection.insert(new BasicDBObject("fName", "Max").append("lName", "Hermansson").append("location", "Amsterdam"));
+		collection.insert(new BasicDBObject("fName", "Jonatan").append("lName", "Viro").append("location", "Örebro"));
+		collection.insert(new BasicDBObject("fName", "Olof").append("lName", "Nymanson").append("location", "Pisa"));
+		collection.insert(new BasicDBObject("fName", "Börje").append("lName", "Salming").append("location", "Stockholm"));
+		collection.insert(new BasicDBObject("fName", "Sid").append("lName", "Sidung").append("location", "Stockholm"));
+		collection.insert(new BasicDBObject("fName", "Thomas").append("lName", "Turin").append("location", "Amsterdam"));
+		collection.insert(new BasicDBObject("fName", "James").append("lName", "Grenblom").append("location", "London"));
+		collection.insert(new BasicDBObject("fName", "Gustav").append("lName", "von Flemming").append("location", "London"))	;
+
 	}
 }
