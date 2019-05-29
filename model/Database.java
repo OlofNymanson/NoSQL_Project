@@ -96,17 +96,17 @@ public class Database {
 	 * Adds ingredient to locations stock
 	 * If stock already has ingredient, the new quantity is added to the old ingredients quantity
 	 */
-	public void addToStock(String locationID, Ingredient ingredient) {
+	public void addToStock(Location l, Ingredient ingredient) {
 		DBCollection collection = database.getCollection("Location");
 
 		DBObject locQuery = null;
 		DBObject update = null;
 		
-		ArrayList<Ingredient> locationStock = getStock(locationID);
+		ArrayList<Ingredient> locationStock = getStock(l);
 		
 		if (alreadyInStock(locationStock, ingredient.name)) {
 
-			locQuery = new BasicDBObject("_id", locationID).append("stock", new BasicDBObject("$elemMatch", new BasicDBObject("name", "Milk")));
+			locQuery = new BasicDBObject("_id", l).append("stock", new BasicDBObject("$elemMatch", new BasicDBObject("name", "Milk")));
 			
 			double currentQuantity = 0;
 			
@@ -119,7 +119,7 @@ public class Database {
 			update = new BasicDBObject("$set", new BasicDBObject("stock.$.quantity", currentQuantity + ingredient.quantity)); //find current ingredient quantity and add
 			
 		} else {
-			locQuery = new BasicDBObject("_id", locationID);
+			locQuery = new BasicDBObject("_id", l);
 			update = new BasicDBObject("$push",
 					new BasicDBObject("stock", new BasicDBObject("name", ingredient.name)
 							.append("price", ingredient.price).append("quantity", ingredient.quantity)));
