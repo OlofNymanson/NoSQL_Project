@@ -3,10 +3,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.swing.*;
-
-import controller.Controller;
 
 
 public class GUI extends JFrame{
@@ -20,7 +23,8 @@ public class GUI extends JFrame{
 		frame.setLayout(new GridLayout(0,1));
 		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
 		
-		JLabel beaver = new JLabel("BEAVERCOFFEE");
+		
+//		JLabel beaver = new JLabel("BEAVERCOFFEE");
 		JButton addMemberBtn = new JButton("Add member");
 		JButton employeeBtn = new JButton("Add employee");
 		JButton locationBtn = new JButton("Add location");
@@ -33,7 +37,15 @@ public class GUI extends JFrame{
 		JButton findIngredientBtn = new JButton("Find ingredient");
 		JButton commentBtn = new JButton("Make a comment");
 		JButton makeOrderBtn = new JButton("Make an order");
+		JButton makeReportBtn = new JButton("Create report");
 		
+		
+		makeReportBtn.addActionListener(new ActionListener(){  
+		    public void actionPerformed(ActionEvent e){  
+		    	frame.setVisible(false);
+		    	makeReport();
+		    }  
+		    }); 
 		
 		makeOrderBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){  
@@ -127,10 +139,86 @@ public class GUI extends JFrame{
 		frame.add(addIngredientBtn);
 		frame.add(findIngredientBtn);
 		frame.add(commentBtn);
+		frame.add(makeReportBtn);
 		frame.setVisible(true);
 		//frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
+	}
+	//väntar med punkt 2 & 4
+	private void makeReport() {
+		final JFrame reportFrame = new JFrame("Make a report");
+		JButton backBtn = new JButton("Back");
+		JButton salesTimeBtn = new JButton("Sales for specific time period");
+		JButton salesProdBtn = new JButton("Sales for a product over a time period");
+		JButton salesCustBtn = new JButton("Sales per customer by occupation");
+		JButton stockQuanBtn = new JButton("Stock quantities");
+		JButton ordersEmpBtn = new JButton("Orders by a employee over time");
+		JButton emplTimeBtn = new JButton("Employees listing over time");
+		JButton custTimeBtn = new JButton("Customers listing over time");
+		
+		reportFrame.dispatchEvent(new WindowEvent(reportFrame, WindowEvent.WINDOW_CLOSING));
+		reportFrame.setLocation(dim.width/2-reportFrame.getSize().width/2, dim.height/2-reportFrame.getSize().height/2);
+		
+		backBtn.addActionListener(new ActionListener(){  
+		    public void actionPerformed(ActionEvent e){ 
+	    		reportFrame.setVisible(false);
+	    		
+	    		new GUI();
+	    }  
+	    });  
+		
+		salesCustBtn.addActionListener(new ActionListener(){  
+		    public void actionPerformed(ActionEvent e){ 
+		    		String occupation = JOptionPane.showInputDialog("Write an occupation");
+	    }  
+	    }); 
+		
+		stockQuanBtn.addActionListener(new ActionListener(){  
+		    public void actionPerformed(ActionEvent e){ 
+		    	
+    }  
+    }); 
+		
+		ordersEmpBtn.addActionListener(new ActionListener(){  
+		    public void actionPerformed(ActionEvent e){ 
+	    		String empID = JOptionPane.showInputDialog("Enter the employee's ID");
+	    		
+    }  
+    }); 
+		
+		salesTimeBtn.addActionListener(new ActionListener(){  
+		    public void actionPerformed(ActionEvent e){
+		    		String startDate = JOptionPane.showInputDialog("Enter start date (YYYYMMDD)");
+		    		int startYear = Integer.valueOf(startDate.substring(0, 4));
+		    		int startYonth = Integer.valueOf(startDate.substring(4, 6));
+		    		int startDay = Integer.valueOf(startDate.substring(6, 8));
+		    		String endDate = JOptionPane.showInputDialog("Enter end date (YYYMMDD)");
+		    		
+//		    		System.out.println("Date:" + haha.format(dateee));
+//		    		Date dateee = new Date(year,month,day);
+//		    		Timestamp ts = new Timestamp(dateee.getDate());
+////		    		System.out.println(year + "-" + month + "-" + day);
+//		    		System.out.println(ts);
+		    		
+	    }  
+	    });  
+		
+		reportFrame.setLayout(new GridLayout(8,1));
+		reportFrame.add(salesTimeBtn);
+		reportFrame.add(salesProdBtn);
+		reportFrame.add(salesCustBtn);
+		reportFrame.add(stockQuanBtn);
+		reportFrame.add(ordersEmpBtn);
+		reportFrame.add(emplTimeBtn);
+		reportFrame.add(custTimeBtn);
+		reportFrame.add(backBtn);
+		
+		
+		reportFrame.setSize(600, 450);
+		reportFrame.setVisible(true);
+		
+		reportFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
 	private void makeOrder() {
@@ -141,16 +229,15 @@ public class GUI extends JFrame{
 		JLabel lblEmpId = new JLabel("Employee ID:");
 		JLabel lblLocId = new JLabel("Location ID:");
 		JLabel lblMemId = new JLabel("Member ID");
-		JTextField tfId = new JTextField();
-		JTextField tfEmpId = new JTextField();
-		JTextField tfLocId = new JTextField();
-		JTextField tfMemId = new JTextField();
+		final JTextField tfId = new JTextField();
+		final JTextField tfEmpId = new JTextField();
+		final JTextField tfLocId = new JTextField();
+		final JTextField tfMemId = new JTextField();
 		locationFrame.dispatchEvent(new WindowEvent(locationFrame, WindowEvent.WINDOW_CLOSING));
 		locationFrame.setLocation(dim.width/2-locationFrame.getSize().width/2, dim.height/2-locationFrame.getSize().height/2);
 		
 		addBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
-		    	//add to db
 		    		locationFrame.setVisible(false);
 		    		new GUI();
 		    }  
@@ -177,6 +264,7 @@ public class GUI extends JFrame{
 		
 		locationFrame.setSize(400, 300);
 		locationFrame.setVisible(true);
+		locationFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
 	private void addIngredient() {
@@ -185,8 +273,8 @@ public class GUI extends JFrame{
 		JButton backBtn = new JButton("Back");
 		JLabel lblName = new JLabel("Ingredient name:");
 		JLabel lblPrice = new JLabel("Price:");
-		JTextField tfName = new JTextField();
-		JTextField tfPrice = new JTextField();
+		final JTextField tfName = new JTextField();
+		final JTextField tfPrice = new JTextField();
 		ingredientFrame.dispatchEvent(new WindowEvent(ingredientFrame, WindowEvent.WINDOW_CLOSING));
 		ingredientFrame.setLocation(dim.width/2-ingredientFrame.getSize().width/2, dim.height/2-ingredientFrame.getSize().height/2);
 		
@@ -215,6 +303,7 @@ public class GUI extends JFrame{
 		
 		ingredientFrame.setSize(400, 300);
 		ingredientFrame.setVisible(true);
+		ingredientFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 		
 		
@@ -225,8 +314,8 @@ public class GUI extends JFrame{
 		JButton backBtn = new JButton("Back");
 		JLabel lblId = new JLabel("Employee id:");
 		JLabel lblEmployer = new JLabel("Comment by:");
-		JTextField tfId = new JTextField();
-		JTextField tfBy = new JTextField();
+		final JTextField tfId = new JTextField();
+		final JTextField tfBy = new JTextField();
 		final JTextArea comment = new JTextArea("Comment here");
 		commentFrame.dispatchEvent(new WindowEvent(commentFrame, WindowEvent.WINDOW_CLOSING));
 		commentFrame.setLocation(dim.width/2-commentFrame.getSize().width/2, dim.height/2-commentFrame.getSize().height/2);
@@ -263,6 +352,7 @@ public class GUI extends JFrame{
 		
 		commentFrame.setSize(400, 300);
 		commentFrame.setVisible(true);
+		commentFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
 	
@@ -273,9 +363,9 @@ public class GUI extends JFrame{
 		JLabel lblFName = new JLabel("First Name:");
 		JLabel lblLName = new JLabel("Last Name:");
 		JLabel lblId = new JLabel("Employer ID:");
-		JTextField tfFName = new JTextField();
-		JTextField tfLName = new JTextField();
-		JTextField tfId = new JTextField();
+		final JTextField tfFName = new JTextField();
+		final JTextField tfLName = new JTextField();
+		final JTextField tfId = new JTextField();
 		employerFrame.dispatchEvent(new WindowEvent(employerFrame, WindowEvent.WINDOW_CLOSING));
 		employerFrame.setLocation(dim.width/2-employerFrame.getSize().width/2, dim.height/2-employerFrame.getSize().height/2);
 		
@@ -306,6 +396,7 @@ public class GUI extends JFrame{
 		
 		employerFrame.setSize(400, 300);
 		employerFrame.setVisible(true);
+		employerFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
 	private void addLocation() {
@@ -315,9 +406,9 @@ public class GUI extends JFrame{
 		JLabel lblCountry = new JLabel("Country:");
 		JLabel lblAddress = new JLabel("Address:");
 		JLabel lblId = new JLabel("Location ID:");
-		JTextField tfCountry = new JTextField();
-		JTextField tfAddress = new JTextField();
-		JTextField tfId = new JTextField();
+		final JTextField tfCountry = new JTextField();
+		final JTextField tfAddress = new JTextField();
+		final JTextField tfId = new JTextField();
 		locationFrame.dispatchEvent(new WindowEvent(locationFrame, WindowEvent.WINDOW_CLOSING));
 		locationFrame.setLocation(dim.width/2-locationFrame.getSize().width/2, dim.height/2-locationFrame.getSize().height/2);
 		
@@ -349,6 +440,7 @@ public class GUI extends JFrame{
 		
 		locationFrame.setSize(400, 300);
 		locationFrame.setVisible(true);
+		locationFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
 	
@@ -361,10 +453,10 @@ public class GUI extends JFrame{
 		JLabel lblLName = new JLabel("Last Name:");
 		JLabel lblId = new JLabel("Employee ID:");
 		JLabel lblLocation = new JLabel("Location ID:");
-		JTextField tfFname = new JTextField();
-		JTextField tfLname = new JTextField();
-		JTextField tfId = new JTextField();
-		JTextField tfLocation = new JTextField();
+		final JTextField tfFname = new JTextField();
+		final JTextField tfLname = new JTextField();
+		final JTextField tfId = new JTextField();
+		final JTextField tfLocation = new JTextField();
 		employeeFrame.dispatchEvent(new WindowEvent(employeeFrame, WindowEvent.WINDOW_CLOSING));
 		employeeFrame.setLocation(dim.width/2-employeeFrame.getSize().width/2, dim.height/2-employeeFrame.getSize().height/2);
 		
@@ -398,6 +490,7 @@ public class GUI extends JFrame{
 		
 		employeeFrame.setSize(400, 300);
 		employeeFrame.setVisible(true);
+		employeeFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
 	
@@ -411,12 +504,12 @@ public class GUI extends JFrame{
 		JLabel lblAddress = new JLabel("Address:");
 		JLabel lblOccupation = new JLabel("Occupation:");
 		JLabel lblSSN = new JLabel("SSN:");
-		JTextField tfFname = new JTextField();
-		JTextField tfLname = new JTextField();
-		JTextField tfId = new JTextField();
-		JTextField tfAddress = new JTextField();
-		JTextField tfOccupation = new JTextField();
-		JTextField tfSSN = new JTextField();
+	    final JTextField tfFname = new JTextField();
+		final JTextField tfLname = new JTextField();
+		final JTextField tfId = new JTextField();
+		final JTextField tfAddress = new JTextField();
+		final JTextField tfOccupation = new JTextField();
+		final JTextField tfSSN = new JTextField();
 		memberFrame.dispatchEvent(new WindowEvent(memberFrame, WindowEvent.WINDOW_CLOSING));
 		memberFrame.setLocation(dim.width/2-memberFrame.getSize().width/2, dim.height/2-memberFrame.getSize().height/2);
 		
@@ -454,6 +547,7 @@ public class GUI extends JFrame{
 		
 		memberFrame.setSize(400, 300);
 		memberFrame.setVisible(true);
+		memberFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
 	public static void main(String[] args) {
