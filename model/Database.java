@@ -166,7 +166,11 @@ class Database {
 		DBObject query = new BasicDBObject("_id", id);
 		DBCursor cursor = collection.find(query);
 	
-		ArrayList<Product> products = new ArrayList<Product>(); //Denna är tom nu och egentligen ska den läsa in från databas, arbetar på det.
+		ArrayList<Product> products = new ArrayList<Product>();
+		while(cursor.hasNext()) {
+			DBObject product = cursor.next();
+			products.add(new Product((String)product.get("id"), (String)product.get("name"), (ArrayList<Ingredient>)product.get("ingredients")));
+		}
 		
 		Order o = new Order(cursor.one().get("_id").toString(), cursor.one().get("empID").toString(), cursor.one().get("locID").toString(), 
 				 cursor.one().get("memID").toString(), products);
@@ -174,12 +178,12 @@ class Database {
 				
 	}
 	
-	public void addComment(Comment c) {
-		DBCollection collection = database.getCollection("Employee");
-		DBObject query = new BasicDBObject("id", c.employeeID);
-		DBCursor cursor = collection.find(query);
-		query.put("comment", c);
-	}
+//	public void addComment(Comment c) {
+//		DBCollection collection = database.getCollection("Employee");
+//		DBObject query = new BasicDBObject("id", c.employeeID);
+//		DBCursor cursor = collection.find(query);
+//		query.put("comment", c);
+//	}
 	
 	public void addProduct(Product p) {
 		DBCollection collection = database.getCollection("Products");
