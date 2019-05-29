@@ -2,8 +2,6 @@ package model;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -298,13 +296,8 @@ public class Database {
 		Initializer i = new Initializer(database);
 		i.initProducts();
 		i.initLocationsAndStock();
-	}
-
-	public void initStockandProducts() {
-		DBCollection collection = database.getCollection("products");
-		// collection.insert(new BasicDBObject("id", p.id).append("name",
-		// p.name).append("ingredients", p.ingredients));
-
+		i.initEmployees();
+		i.initMembers();
 	}
 
 	public boolean checkDiscount(String ID) {
