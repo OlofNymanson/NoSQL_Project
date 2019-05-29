@@ -92,37 +92,40 @@ public class Database {
 	}
 
 	/*
-	 * Adds ingredient to locations stock
-	 * If stock already has ingredient, the new quantity is added to the old ingredients quantity
+	 * Adds ingredient to locations stock If stock already has ingredient, the new
+	 * quantity is added to the old ingredients quantity
 	 */
 	public void addToStock(Location l, Ingredient ingredient) {
 		DBCollection collection = database.getCollection("Location");
 
 		DBObject locQuery = null;
 		DBObject update = null;
-		
+
 		ArrayList<Ingredient> locationStock = getStock(l);
-		
+
 		if (alreadyInStock(locationStock, ingredient.name)) {
 
-			locQuery = new BasicDBObject("_id", l.id).append("stock", new BasicDBObject("$elemMatch", new BasicDBObject("name", ingredient.name)));
-			
+			locQuery = new BasicDBObject("_id", l.id).append("stock",
+					new BasicDBObject("$elemMatch", new BasicDBObject("name", ingredient.name)));
+
 			double currentQuantity = 0;
-			
-			for(Ingredient i : locationStock) {
-				if(i.name.equals(ingredient.name)) {
+
+			for (Ingredient i : locationStock) {
+				if (i.name.equals(ingredient.name)) {
 					currentQuantity = i.quantity;
 					break;
 				}
 			}
-			
-			update = new BasicDBObject("$set", new BasicDBObject("stock.$.quantity", currentQuantity + ingredient.quantity)); //find current ingredient quantity and add
-			
+
+			update = new BasicDBObject("$set",
+					new BasicDBObject("stock.$.quantity", currentQuantity + ingredient.quantity)); // find current
+																									// ingredient
+																									// quantity and add
+
 		} else {
 			locQuery = new BasicDBObject("_id", l);
-			update = new BasicDBObject("$push",
-						new BasicDBObject("stock", new BasicDBObject("name", ingredient.name)
-							.append("price", ingredient.price).append("quantity", ingredient.quantity)));
+			update = new BasicDBObject("$push", new BasicDBObject("stock", new BasicDBObject("name", ingredient.name)
+					.append("price", ingredient.price).append("quantity", ingredient.quantity)));
 		}
 
 		collection.findAndModify(locQuery, update);
@@ -154,90 +157,108 @@ public class Database {
 
 		return false;
 	}
-	
+
 	public void takeFromStock(Order order) throws Exception {
 		DBCollection collection = database.getCollection("Location");
-		
-		if(!enoughIngredientsInStock(order)) {
+
+		if (!enoughIngredientsInStock(order)) {
 			throw new Exception("Not enough ingredients!");
 		}
-		
 
 		double currentQuantity;
 		ArrayList<Ingredient> locationStock = getStock(findLocation(order.locID));
-		
-		for(Product p : order.products) {
-			for(Ingredient ip : p.ingredients) {
+
+		for (Product p : order.products) {
+			for (Ingredient ip : p.ingredients) {
 				currentQuantity = 0;
-				
-				for(Ingredient is : locationStock) {
-					if(ip.name.equals(is.name)) {
+
+				for (Ingredient is : locationStock) {
+					if (ip.name.equals(is.name)) {
 						currentQuantity = is.quantity;
 						break;
 					}
 				}
-				
-				DBObject query = new BasicDBObject("_id", order.locID).append("stock", new BasicDBObject("$elemMatch", new BasicDBObject("name", ip.name)));
-				DBObject update = new BasicDBObject("$set", new BasicDBObject("stock.$.quantity", currentQuantity - ip.quantity));
+
+				DBObject query = new BasicDBObject("_id", order.locID).append("stock",
+						new BasicDBObject("$elemMatch", new BasicDBObject("name", ip.name)));
+				DBObject update = new BasicDBObject("$set",
+						new BasicDBObject("stock.$.quantity", currentQuantity - ip.quantity));
 				collection.findAndModify(query, update);
 			}
 		}
 	}
 
-	
 	private boolean enoughIngredientsInStock(Order order) {
 		ArrayList<Ingredient> locationStock = getStock(findLocation(order.locID));
-		
-		//förlåt
-		for(Ingredient ingredientInStock : locationStock) { 
-			for(Product p : order.products) {
-				for(Ingredient ingredientInProduct : p.ingredients) {
-					if(ingredientInProduct.name.equals(ingredientInStock.name)) {
-						if((ingredientInStock.quantity - ingredientInProduct.quantity) < 0) {
+
+		// förlåt
+		for (Ingredient ingredientInStock : locationStock) {
+			for (Product p : order.products) {
+				for (Ingredient ingredientInProduct : p.ingredients) {
+					if (ingredientInProduct.name.equals(ingredientInStock.name)) {
+						if ((ingredientInStock.quantity - ingredientInProduct.quantity) < 0) {
 							return false;
 						}
 					}
 				}
 			}
 		}
-		
+
 		return true;
 	}
-	
-	
+
 	public void createOrder(Order o) {
 		DBCollection collection = database.getCollection("order");
+
 		
 		collection.insert(new BasicDBObject("_id", o.id).append("empID", o.empID).append("locID", o.locID).append("memID", o.memID)
 				.append("_ts", o.ts).append("price", o.price).append("products", o.products));
 		
 		addCoffeeCount(findMember(o.memID));
 	}
-	
+
 	public Order findOrder(String id) {
 		DBCollection collection = database.getCollection("order");
 		DBObject query = new BasicDBObject("_id", id);
 		DBCursor cursor = collection.find(query);
-	
+
 		ArrayList<Product> products = new ArrayList<Product>();
-		while(cursor.hasNext()) {
+		while (cursor.hasNext()) {
 			DBObject product = cursor.next();
-			products.add(new Product((String)product.get("id"), (String)product.get("name"), (ArrayList<Ingredient>)product.get("ingredients")));
+			products.add(new Product((String) product.get("id"), (String) product.get("name"),
+					(ArrayList<Ingredient>) product.get("ingredients")));
 		}
-		
-		Order o = new Order(cursor.one().get("_id").toString(), cursor.one().get("empID").toString(), cursor.one().get("locID").toString(), 
-				 cursor.one().get("memID").toString(), products);
+
+		Order o = new Order(cursor.one().get("_id").toString(), cursor.one().get("empID").toString(),
+				cursor.one().get("locID").toString(), cursor.one().get("memID").toString(), products);
 		return o;
+
 	}
 	
 	//is added for every order
 	private void addCoffeeCount(Member member) {
 		DBCollection collection = database.getCollection("Member");
 		DBObject query = new BasicDBObject("_id", member.id);
-		DBCursor cursor = collection.find(query);
-		int currentCoffeeCount = (Integer)cursor.one().get("coffeeCount");
-		DBObject update = new BasicDBObject("$set", new BasicDBObject("coffeeCount", ++currentCoffeeCount));
+		int coffeeCount = getCoffeeCount(member);
+		DBObject update = new BasicDBObject("$set", new BasicDBObject("coffeeCount", ++coffeeCount));
 		collection.findAndModify(query, update);
+	}
+
+	public boolean freeCoffee(Member member) {
+		int coffeeCount = getCoffeeCount(member);
+		
+		if(coffeeCount % 10 == 0) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private int getCoffeeCount(Member member) {
+		DBCollection collection = database.getCollection("Member");
+		DBObject query = new BasicDBObject("_id", member.id);
+		DBCursor cursor = collection.find(query);
+		return (Integer)cursor.one().get("coffeeCount");
 	}
 	
 	public void addComment(Comment c) {
@@ -246,36 +267,66 @@ public class Database {
 		DBObject update = new BasicDBObject("$set", new BasicDBObject("comment", c.comment));
 		collection.findAndModify(query, update);
 	}
-	
+
 	public void addProduct(Product p) {
 		DBCollection collection = database.getCollection("Products");
 		collection.insert(new BasicDBObject("id", p.id).append("name", p.name).append("ingredients", p.ingredients));
 	}
-	
-	
+
 	public ArrayList<Product> getProducts() {
 		DBCollection collection = database.getCollection("Products");
 		DBCursor cursor = collection.find();
 		ArrayList<Product> productList = new ArrayList<Product>();
-		while(cursor.hasNext()) {
+		while (cursor.hasNext()) {
 			DBObject product = cursor.next();
-			productList.add(new Product((String)product.get("id"), (String)product.get("name"), (ArrayList<Ingredient>)product.get("ingredients")));
+			productList.add(new Product((String) product.get("_id"), (String) product.get("name"),
+					(ArrayList<Ingredient>) product.get("ingredients")));
 		}
-		
+
 		return productList;
 	}
-	
+
 	public void initStockandProducts() {
 		DBCollection collection = database.getCollection("products");
-//		collection.insert(new BasicDBObject("id", p.id).append("name", p.name).append("ingredients", p.ingredients));
+		// collection.insert(new BasicDBObject("id", p.id).append("name",
+		// p.name).append("ingredients", p.ingredients));
+
+	}
+
+	public boolean checkDiscount(String ID) {
+		DBCollection collection = database.getCollection("Employee");
+		DBObject query = new BasicDBObject("_id", ID);
+		DBCursor cursor = collection.find(query);
+
+		if (cursor.hasNext()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
+	public ArrayList<Location> getAllLocations() {
+		ArrayList<Location> locList = new ArrayList<Location>();
+		DBCollection collection = database.getCollection("Location");
+		DBCursor cursor = collection.find();
+
+		while (cursor.hasNext()) {
+			DBObject location = cursor.next();
+			locList.add(new Location((String) location.get("_id"), (String) location.get("adress"),
+					(String) location.get("country")));
+		}
+		
+		return locList;
+
+	}
+
 	public boolean init() {
 		return true;
 	}
-	
+
 	public static void main(String[] args) {
 		Database db = new Database();
+
 //		
 //		//ADD EMPLOYEE
 //		db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "loc_malmö1"));
@@ -300,7 +351,7 @@ public class Database {
 //		Location fl = db.findLocation("loc_malmö1");
 //		Employee fe = db.findEmployee("emp_olny95");
 //		Member fm = db.findMember("osar93");
-//		Order o = new Order("ord_1", fe.id, fl.id, fm.id, products);
+//		Order o = new Order("ord_6", fe.id, fl.id, fm.id, products);
 //		db.createOrder(o);
 //		System.out.println(o.id);
 		
