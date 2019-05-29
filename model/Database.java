@@ -11,7 +11,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
-class Database {
+public class Database {
 	private MongoClient client;
 	private DB database;
 
@@ -82,7 +82,7 @@ class Database {
 	}
 
 	public Location findLocation(String id) {
-		DBCollection collection = database.getCollection("location");
+		DBCollection collection = database.getCollection("Location");
 		DBObject query = new BasicDBObject("_id", id);
 		DBCursor cursor = collection.find(query);
 
@@ -95,17 +95,17 @@ class Database {
 	 * Adds ingredient to locations stock
 	 * If stock already has ingredient, the new quantity is added to the old ingredients quantity
 	 */
-	public void addToStock(String locationID, Ingredient ingredient) {
+	public void addToStock(Location l, Ingredient ingredient) {
 		DBCollection collection = database.getCollection("Location");
 
 		DBObject locQuery = null;
 		DBObject update = null;
 		
-		ArrayList<Ingredient> locationStock = getStock(locationID);
+		ArrayList<Ingredient> locationStock = getStock(l);
 		
 		if (alreadyInStock(locationStock, ingredient.name)) {
 
-			locQuery = new BasicDBObject("_id", locationID).append("stock", new BasicDBObject("$elemMatch", new BasicDBObject("name", ingredient.name)));
+			locQuery = new BasicDBObject("_id", l.id).append("stock", new BasicDBObject("$elemMatch", new BasicDBObject("name", ingredient.name)));
 			
 			double currentQuantity = 0;
 			
@@ -119,7 +119,7 @@ class Database {
 			update = new BasicDBObject("$set", new BasicDBObject("stock.$.quantity", currentQuantity + ingredient.quantity)); //find current ingredient quantity and add
 			
 		} else {
-			locQuery = new BasicDBObject("_id", locationID);
+			locQuery = new BasicDBObject("_id", l);
 			update = new BasicDBObject("$push",
 						new BasicDBObject("stock", new BasicDBObject("name", ingredient.name)
 							.append("price", ingredient.price).append("quantity", ingredient.quantity)));
@@ -128,11 +128,11 @@ class Database {
 		collection.findAndModify(locQuery, update);
 	}
 
-	public ArrayList<Ingredient> getStock(String locationID) {
+	public ArrayList<Ingredient> getStock(Location location) {
 		ArrayList<Ingredient> stock = new ArrayList<Ingredient>();
 		DBCollection collection = database.getCollection("Location");
 
-		DBObject query = new BasicDBObject("_id", locationID);
+		DBObject query = new BasicDBObject("_id", location.id);
 		DBCursor cursor = collection.find(query);
 
 		ArrayList<DBObject> list = (ArrayList<DBObject>) cursor.one().get("stock");
@@ -164,7 +164,7 @@ class Database {
 		
 
 		double currentQuantity;
-		ArrayList<Ingredient> locationStock = getStock(order.locID);
+		ArrayList<Ingredient> locationStock = getStock(findLocation(order.locID));
 		
 		for(Product p : order.products) {
 			for(Ingredient ip : p.ingredients) {
@@ -186,7 +186,7 @@ class Database {
 
 	
 	private boolean enoughIngredientsInStock(Order order) {
-		ArrayList<Ingredient> locationStock = getStock(order.locID);
+		ArrayList<Ingredient> locationStock = getStock(findLocation(order.locID));
 		
 		//förlåt
 		for(Ingredient ingredientInStock : locationStock) { 
@@ -253,6 +253,15 @@ class Database {
 		return productList;
 	}
 	
+	public void initStockandProducts() {
+		DBCollection collection = database.getCollection("products");
+//		collection.insert(new BasicDBObject("id", p.id).append("name", p.name).append("ingredients", p.ingredients));
+		
+	}
+	
+	public boolean init() {
+		return true;
+	}
 	
 	public static void main(String[] args) {
 		Database db = new Database();
@@ -302,5 +311,7 @@ class Database {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		System.out.println("X");
 	}
 }
