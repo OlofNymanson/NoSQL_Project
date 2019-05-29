@@ -268,7 +268,6 @@ public class Database {
 	public void initStockandProducts() {
 		DBCollection collection = database.getCollection("products");
 //		collection.insert(new BasicDBObject("id", p.id).append("name", p.name).append("ingredients", p.ingredients));
-		
 	}
 	
 	public boolean init() {
