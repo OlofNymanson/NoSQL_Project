@@ -12,7 +12,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
-class Database {
+public class Database {
 	private MongoClient client;
 	private DB database;
 

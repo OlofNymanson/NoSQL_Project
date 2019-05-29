@@ -6,6 +6,8 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 
+import controller.Controller;
+
 
 public class GUI extends JFrame{
 	
@@ -17,7 +19,6 @@ public class GUI extends JFrame{
 		frame.setSize(600, 400);
 		frame.setLayout(new GridLayout(0,1));
 		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
-		//
 		
 		JLabel beaver = new JLabel("BEAVERCOFFEE");
 		JButton addMemberBtn = new JButton("Add member");
