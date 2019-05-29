@@ -203,6 +203,15 @@ class Database {
 		return productList;
 	}
 	
+	public void initStockandProducts() {
+		DBCollection collection = database.getCollection("products");
+//		collection.insert(new BasicDBObject("id", p.id).append("name", p.name).append("ingredients", p.ingredients));
+		
+	}
+	
+	public boolean init() {
+		return true;
+	}
 	
 	public static void main(String[] args) {
 		Database db = new Database();
