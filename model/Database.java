@@ -200,6 +200,7 @@ class Database {
 			DBObject product = cursor.next();
 			productList.add(new Product((String)product.get("id"), (String)product.get("name"), (ArrayList<Ingredient>)product.get("ingredients")));
 		}
+		
 		return productList;
 	}
 	
