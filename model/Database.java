@@ -285,6 +285,12 @@ public class Database {
 
 		return productList;
 	}
+	
+	public void init() {
+		Initializer i = new Initializer(database);
+		i.initProducts();
+		i.initLocationsAndStock();
+	}
 
 	public void initStockandProducts() {
 		DBCollection collection = database.getCollection("products");
@@ -320,12 +326,10 @@ public class Database {
 
 	}
 
-	public boolean init() {
-		return true;
-	}
-
 	public static void main(String[] args) {
 		Database db = new Database();
+		
+		db.init(); //Kommer att dubbla alla produkter om körs flera gånger. 
 
 //		
 //		//ADD EMPLOYEE
@@ -360,6 +364,9 @@ public class Database {
 //		Order o = db.findOrder("ord_1");
 //		System.out.println(o.id);
 		
+//		Order o = db.findOrder("ord_1");
+//		System.out.println(o.id);
+		
 		//Take from stock:
 //		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
 //		ArrayList<Product> products = new ArrayList<Product>();
@@ -380,5 +387,6 @@ public class Database {
 //		db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
 		
 		System.out.println("X");
+
 	}
 }
