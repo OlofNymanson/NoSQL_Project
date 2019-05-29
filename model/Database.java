@@ -273,6 +273,7 @@ public class Database {
 		i.initProducts();
 		i.initLocationsAndStock();
 		i.initEmployees();
+		i.initMembers();
 	}
 
 	public boolean checkDiscount(String ID) {

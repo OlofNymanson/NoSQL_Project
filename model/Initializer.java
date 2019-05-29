@@ -246,4 +246,21 @@ public class Initializer {
 		collection.insert(new BasicDBObject("fName", "Gustav").append("lName", "von Flemming").append("location", "London"))	;
 
 	}
+	
+	public void initMembers() {
+		DBCollection collection = database.getCollection("Member");
+		
+		collection.insert(new BasicDBObject("fName", "Oscar").append("lName", "Ågren").append("address", "London").append("SSN", "19930909").append("Ocupation", "Systemutvecklare"));
+		collection.insert(new BasicDBObject("fName", "Göran").append("lName", "Åkesson").append("address", "Malmö").append("SSN", "19931009").append("Ocupation", "Systemutvecklare"));
+		collection.insert(new BasicDBObject("fName", "Nils").append("lName", "Malmgren").append("address", "Malmö").append("SSN", "19940909").append("Ocupation", "Systemutvecklare"));
+		collection.insert(new BasicDBObject("fName", "Max").append("lName", "Hermansson").append("address", "Amsterdam").append("SSN", "19900129").append("Ocupation", "Snickare"));
+		collection.insert(new BasicDBObject("fName", "Jonatan").append("lName", "Viro").append("address", "Örebro").append("SSN", "19911231").append("Ocupation", "Systemutvecklare"));
+		collection.insert(new BasicDBObject("fName", "Olof").append("lName", "Nymanson").append("address", "Pisa").append("SSN", "19991212").append("Ocupation", "Systemutvecklare"));
+		collection.insert(new BasicDBObject("fName", "Börje").append("lName", "Salming").append("address", "Stockholm").append("SSN", "19950909").append("Ocupation", "Barista"));
+		collection.insert(new BasicDBObject("fName", "Sid").append("lName", "Sidung").append("address", "Stockholm").append("SSN", "19920909").append("Ocupation", "Systemutvecklare"));
+		collection.insert(new BasicDBObject("fName", "Thomas").append("lName", "Turin").append("address", "Amsterdam").append("SSN", "19910109").append("Ocupation", "DJ"));
+		collection.insert(new BasicDBObject("fName", "James").append("lName", "Grenblom").append("address", "London").append("SSN", "19940901").append("Ocupation", "Systemutvecklare"));
+		collection.insert(new BasicDBObject("fName", "Gustav").append("lName", "von Flemming").append("address", "London").append("SSN", "19980901").append("Ocupation", "Operasångare"));
+
+	}
 }
