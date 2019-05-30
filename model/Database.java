@@ -1,9 +1,14 @@
 package model;
 
+
+
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Filter;
 import com.mongodb.BasicDBObject;
@@ -12,6 +17,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+
 
 import java.sql.*;
 
@@ -231,7 +237,7 @@ public class Database {
 		}
 
 		collection.insert(new BasicDBObject("_id", o.id).append("empID", o.empID).append("locID", o.locID)
-				.append("memID", o.memID).append("_ts", o.ts).append("price", o.price).append("products", products));
+				.append("memID", o.memID).append("_ts", o.ts.toString()).append("price", o.price).append("products", products));
 
 		addCoffeeCount(findMember(o.memID));
 	}
@@ -269,12 +275,16 @@ public class Database {
 	// is added for every order
 	private void addCoffeeCount(Member member) {
 		DBCollection collection = database.getCollection("Member");
-		DBObject query = new BasicDBObject("_id", member.id);
+		DBObject query = new BasicDBObject("SSN", member.SSN);
 		DBCursor cursor = collection.find(query);
-		int currentCoffeeCount = (Integer) cursor.one().get("coffeeCount");
-		DBObject update = new BasicDBObject("$set", new BasicDBObject("coffeeCount", ++currentCoffeeCount));
-
-		collection.findAndModify(query, update);
+		try {
+			int currentCoffeeCount = (Integer) cursor.one().get("coffeeCount");
+			DBObject update = new BasicDBObject("$set", new BasicDBObject("coffeeCount", ++currentCoffeeCount));
+			collection.findAndModify(query, update);
+		}
+		catch(Exception e) {
+			
+		}
 	}
 
 	public boolean freeCoffee(Member member) {
@@ -365,42 +375,66 @@ public class Database {
 
 	}
 
-	public ArrayList<Order> getOrdersTimePeriod(Timestamp from, Timestamp to) {
+
+	public ArrayList<Order> getOrdersTimePeriod(Instant from, Instant to) {
 		ArrayList<Order> orderList = new ArrayList<Order>();
 		DBCollection collection = database.getCollection("order");
 		
-		System.out.println(from.toString());
+		BasicDBObject query = new BasicDBObject("_ts", new BasicDBObject("$gt", from.toString()).append("$lte", to.toString()));
 		
-		BasicDBObject query = new BasicDBObject("_ts",
-				new BasicDBObject("$gt", from.toString()).append("$lte", to.toString()));
 		DBCursor cursor = collection.find(query);
 		
-		System.out.println(query);
-		
-		System.out.println("XXX");
-		
-		System.out.println(cursor.one());
-
 		while (cursor.hasNext()) {
 			DBObject DBOrder = cursor.next();
 			
 			ArrayList<Product> products = new ArrayList<Product>();
-			
+
 			Order order = findOrder(DBOrder.get("_id").toString());
 			
-			System.out.println(order);
-			
-			orderList.add(new Order((Timestamp) DBOrder.get("dateAndTime"), (String) DBOrder.get("id"),
-					(String) DBOrder.get("employeeId"), (String) DBOrder.get("locationId"), (String) DBOrder.get("memberId"),
-					products));
+			orderList.add(order);
 		}
 
 		return orderList;
-
+	}
+	
+	public int getNumberOfSalesCustomer(String SSN) {
+		DBCollection collection = database.getCollection("order");
+		 int numOfSales = 0;
+		
+		BasicDBObject numQuery = new BasicDBObject("memID", SSN);
+		
+		DBCursor cursor = collection.find(numQuery);
+		
+		while(cursor.hasNext()) {
+			numOfSales++;
+			cursor.next();
+		}
+		
+		
+		return numOfSales;
+		
 	}
 
+	public int getNumberOfSpecificItems(String item, Instant from, Instant to) {
+		DBCollection collection = database.getCollection("order");
+		DBObject query = new BasicDBObject("products", new BasicDBObject("$elemMatch", new BasicDBObject("name", item)));
+		
+		DBCursor cursor = collection.find(query);
+		
+		int counter = 0;
+		
+		while(cursor.hasNext()) {
+			counter++;
+			cursor.next();
+		}
+		
+		return counter;
+	}
+	
 	public static void main(String[] args) {
 		Database db = new Database();
+
+
 		
 //		db.init(); //Kommer att dubbla allt i databas om körs flera gånger. 
 		
@@ -421,16 +455,16 @@ public class Database {
 //		Location fl = db.findLocation("Malmö"); //adress
 //		System.out.println(fl.country);
 
-//		//Add Order - FUNKAR
+		//CREATE ORDER
 //		ArrayList<Product> products = new ArrayList<Product>();
 //		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
 //		ingredients.add(new Ingredient("milk", 2.5, 3));
 //		ingredients.add(new Ingredient("beans", 2.5, 3));
 //		products.add(new Product("p1", "coffee", ingredients));
 //		Location fl = db.findLocation("Malmö");
-//		Employee fe = db.findEmployee("emp_olny95");
-//		Member fm = db.findMember("osar93");
-//		Order o = new Order("ord_208", fe.id, fl.id, fm.id, products);
+//		Employee fe = db.findEmployee("Gustav", "von Flemming", "London");
+//		Member fm = db.findMember("19910109");	//MUST USE SSN
+//		Order o = new Order("ord_232", fe.id, fl.id, fm.SSN, products);
 //		db.createOrder(o);
 //		System.out.println(o.id);
 		
@@ -455,6 +489,18 @@ public class Database {
 		
 		//Comment - FUNKAR
 //		db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
+		
+		//Mellan tidsperioder:
+//		Instant time = Instant.now();
+//		Instant before = Instant.now().minusSeconds(86400);
+//		
+//		for(Order ord : db.getOrdersTimePeriod(before, time)) {
+//			System.out.println(ord.products);
+//		}
+		
+		//FUNKAR:
+//		System.out.println(db.getNumberOfSpecificItems("coffee", Instant.now().minusSeconds(1000000), Instant.now()));
+//		System.out.println(db.getNumberOfSalesCustomer("19910109"));
 		
 		System.out.println("X");
 	}

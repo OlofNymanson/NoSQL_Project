@@ -54,7 +54,6 @@ public class Controller {
 	
 	public static void addOrder(Order o) {
 		dbHelper.createOrder(o);
-		System.out.println("Order added: id:" + o.id + "empId: "+ o.empID+ "locationID: " + o.locID + "memID: " + o.memID +"price: "+ o.price + "Timestamp: " + o.ts);
 		for (int i = 0; i < o.products.size();i++) {
 			System.out.println("Product " + i + o.products.get(i));
 		}
