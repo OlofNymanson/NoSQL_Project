@@ -1,9 +1,13 @@
 package model;
 
+
+
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Filter;
 import com.mongodb.BasicDBObject;
@@ -12,6 +16,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+
 
 public class Database {
 	private MongoClient client;
@@ -353,28 +358,26 @@ public class Database {
 
 	}
 
-	public ArrayList<Order> getOrdersTimePeriod(Timestamp from, Timestamp to) {
-		ArrayList<Order> orderList = new ArrayList<Order>();
-		DBCollection collection = database.getCollection("order");
-
-		BasicDBObject query = new BasicDBObject("dateAndTime",
-				new BasicDBObject("$gte", from.toString()).append("$lte", to.toString()));
-		DBCursor cursor = collection.find(query);
-
-		while (cursor.hasNext()) {
-			DBObject order = cursor.next();
-			orderList.add(new Order((Timestamp) order.get("dateAndTime"), (String) order.get("id"),
-					(String) order.get("employeeId"), (String) order.get("locationId"), (String) order.get("memberId"),
-					order.get("products")));
-		}
-
-		return orderList;
-
+	
+	public ArrayList<Order> getOrderFromItems(String[] items ){
+		return null;
+		
 	}
 
 	public static void main(String[] args) {
 		Database db = new Database();
 
+		Instant time = Instant.now();
+		
+		System.out.println(time.toString());
+		Date date = Date.from(time);
+		System.out.println(date);
+		
+		System.out.println(new Timestamp(System.currentTimeMillis()));
+
+		time = new Timestamp(System.currentTimeMillis()).toInstant();
+		System.out.println(time);
+		
 		// db.init(); //Kommer att dubbla alla produkter om körs flera gånger.
 
 		// //ADD EMPLOYEE
