@@ -1,6 +1,7 @@
 package model;
 
-public class Ingredient {
+public class Ingredient{
+
 	String name;
 	double price, quantity;
 	
