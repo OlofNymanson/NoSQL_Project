@@ -402,7 +402,7 @@ public class Database {
 	public static void main(String[] args) {
 		Database db = new Database();
 		
-//		db.init(); //Kommer att dubbla alla produkter om körs flera gånger. 
+//		db.init(); //Kommer att dubbla allt i databas om körs flera gånger. 
 		
 //		//ADD EMPLOYEE - FUNKAR
 //		db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "loc_malmö1"));
