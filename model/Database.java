@@ -407,6 +407,8 @@ public class Database {
 		
 		while(cursor.hasNext()) {
 			numOfSales++;
+			cursor.next();
+
 		}
 		
 		
