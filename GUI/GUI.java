@@ -2,6 +2,8 @@ package GUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -13,13 +15,16 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 import controller.Controller;
-import model.Location;
+import model.*;
+
+//import controller.Controller;
 
 
 public class GUI extends JFrame{
 	
 	private Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-	//private Controller controller = new Controller();
+	private Controller controller = new Controller();
+	private Timestamp ts;
 	
 	public GUI() {
 		final JFrame frame = new JFrame("BEAVERCOFFEE");
@@ -67,25 +72,39 @@ public class GUI extends JFrame{
 		
 		findMemberBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
-		    	String id = JOptionPane.showInputDialog("Enter a member's ID");
+		    	String id = JOptionPane.showInputDialog("Enter a member's SSN");
+		    	Member member = controller.findMember(id);
+		    	String res = "First Name: " + member.fName + "\n Last Name: " + member.lName + "\n ID: " + member.id + "\n Adress: " + member.address +
+		    			"\n Occupation: " + member.occupation + "\n SSN: " + member.SSN;
+		    	JOptionPane.showMessageDialog(null, res);
 		    }  
 		    });
 		
 		findLocationBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
-		    	String id = JOptionPane.showInputDialog("Enter a location's ID");
+		    	String adress = JOptionPane.showInputDialog("Enter a location's adress");
+		    	String res = controller.findLocation(adress);
+		    	JOptionPane.showMessageDialog(null, res);
 		    }  
 		    });
 		
 		findEmployeeBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
 		    	String id = JOptionPane.showInputDialog("Enter a employee's ID");
+		    	
+		    	String empInfo = controller.findEmployee(id);
+		    	System.out.println("Hej");
+		    	JOptionPane.showMessageDialog(null, empInfo);
 		    }  
 		    });
 		
 		findEmployerBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
 		    	String id = JOptionPane.showInputDialog("Enter a employer's ID");
+		    	Employer emp = controller.findEmployer(id);
+		    	String res = "Employer ID: " + emp.id + "\n First Name: " + emp.fName + "\n Last Name:" + emp.lName;
+		    	JOptionPane.showMessageDialog(null, res);
+		    	
 		    }  
 		    });
 		
@@ -149,6 +168,8 @@ public class GUI extends JFrame{
 		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 	}
+	
+	
 	//väntar med punkt 2 & 4
 	private void makeReport() {
 		final JFrame reportFrame = new JFrame("Make a report");
@@ -160,17 +181,13 @@ public class GUI extends JFrame{
 		JButton ordersEmpBtn = new JButton("Orders by a employee over time");
 		JButton emplTimeBtn = new JButton("Employees listing over time");
 		JButton custTimeBtn = new JButton("Customers listing over time");
+		JLabel hahaa = new JLabel("Products");
+//		final ButtonGroup bg = new ButtonGroup();
 		
 		reportFrame.dispatchEvent(new WindowEvent(reportFrame, WindowEvent.WINDOW_CLOSING));
 		reportFrame.setLocation(dim.width/2-reportFrame.getSize().width/2, dim.height/2-reportFrame.getSize().height/2);
 		
-		backBtn.addActionListener(new ActionListener(){  
-		    public void actionPerformed(ActionEvent e){ 
-	    		reportFrame.setVisible(false);
-	    		
-	    		new GUI();
-	    }  
-	    });  
+		
 		
 		salesCustBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
@@ -180,9 +197,95 @@ public class GUI extends JFrame{
 		
 		stockQuanBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
+//		    		ArrayList<Product> products = controller.getProducts();
+		    	final ArrayList<JRadioButton> buttons = new ArrayList<JRadioButton>();
+		    	final String[] products = {"Latte", "cappuccino", "Milk", "Choklad"};
+		    	ButtonGroup bg = new ButtonGroup();
+		    		final JFrame frame = new JFrame("Stock quantity time period");
+		    		JButton backBtn = new JButton("Back");
+		    		JLabel lblSDate = new JLabel("Start date(yyyymmdd");
+		    		final JTextField tfSDate = new JTextField();
+		    		final JTextField tfEDate = new JTextField();		    		
+		    		JLabel lblEDate = new JLabel("End date(yyyymmdd");
+		    		JButton checkBtn = new JButton("Check");
+		    		frame.setSize(400,300);
+		    		frame.setVisible(true);
+//		    		frame.add(bg);
+		    		frame.setLayout(new GridLayout(10,2));
+		    		
+		    		for(int i = 0; i < products.length; i++) {
+		    			JRadioButton prod = new JRadioButton(products[i]);	
+		    			buttons.add(prod);
+		    			frame.add(prod);
+		    		}
+		    		frame.add(lblSDate);
+		    		frame.add(tfSDate);
+		    		frame.add(lblEDate);
+		    		frame.add(tfEDate);		    		
+		    		frame.add(checkBtn);
+		    		frame.add(backBtn);
+		    		
+		    		backBtn.addActionListener(new ActionListener(){  
+		    		    public void actionPerformed(ActionEvent e){ 
+		    	    		frame.setVisible(false);
+		    	    }  
+		    	    });  
+		    		
+		    		checkBtn.addActionListener(new ActionListener(){  
+		    		    public void actionPerformed(ActionEvent e){ 
+		    	    		frame.setVisible(false);
+		    	    		checkStock(products, buttons, tfSDate.getText(), tfEDate.getText());
+		    	    }  
+		    	    });  
 		    	
     }  
     }); 
+		
+		salesProdBtn.addActionListener(new ActionListener(){  
+		    public void actionPerformed(ActionEvent e){ 
+//		    		ArrayList<Product> products = controller.getProducts();
+		    	final ArrayList<JRadioButton> buttons = new ArrayList<JRadioButton>();
+		    	final String[] products = {"Latte", "cappuccino", "Milk", "Choklad"};
+		    	ButtonGroup bg = new ButtonGroup();
+		    		final JFrame frame = new JFrame("Product sales time period");
+		    		JButton backBtn = new JButton("Back");
+		    		JLabel lblSDate = new JLabel("Start date(yyyymmdd");
+		    		final JTextField tfSDate = new JTextField();
+		    		final JTextField tfEDate = new JTextField();		    		
+		    		JLabel lblEDate = new JLabel("End date(yyyymmdd");
+		    		JButton checkBtn = new JButton("Check");
+		    		frame.setSize(400,300);
+		    		frame.setVisible(true);
+//		    		frame.add(bg);
+		    		frame.setLayout(new GridLayout(10,2));
+		    		
+		    		for(int i = 0; i < products.length; i++) {
+		    			JRadioButton prod = new JRadioButton(products[i]);	
+		    			buttons.add(prod);
+		    			frame.add(prod);
+		    		}
+		    		frame.add(lblSDate);
+		    		frame.add(tfSDate);
+		    		frame.add(lblEDate);
+		    		frame.add(tfEDate);		    		
+		    		frame.add(checkBtn);
+		    		frame.add(backBtn);
+		    		
+		    		backBtn.addActionListener(new ActionListener(){  
+		    		    public void actionPerformed(ActionEvent e){ 
+		    	    		frame.setVisible(false);
+		    	    }  
+		    	    });  
+		    		
+		    		checkBtn.addActionListener(new ActionListener(){  
+		    		    public void actionPerformed(ActionEvent e){ 
+		    	    		frame.setVisible(false);
+		    	    		checkProduct(products, buttons, tfSDate.getText(), tfEDate.getText());
+		    	    }  
+		    	    });  
+		    		
+	    }  
+	    });  
 		
 		ordersEmpBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
@@ -198,12 +301,6 @@ public class GUI extends JFrame{
 		    		int startYonth = Integer.valueOf(startDate.substring(4, 6));
 		    		int startDay = Integer.valueOf(startDate.substring(6, 8));
 		    		String endDate = JOptionPane.showInputDialog("Enter end date (YYYMMDD)");
-		    		
-//		    		System.out.println("Date:" + haha.format(dateee));
-//		    		Date dateee = new Date(year,month,day);
-//		    		Timestamp ts = new Timestamp(dateee.getDate());
-////		    		System.out.println(year + "-" + month + "-" + day);
-//		    		System.out.println(ts);
 		    		
 	    }  
 	    });  
@@ -225,62 +322,153 @@ public class GUI extends JFrame{
 		reportFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
+	private void checkStock(String[] prod, ArrayList<JRadioButton> b, String sDate, String eDate) {
+		String[] products = prod;
+		ArrayList<JRadioButton> buttons = b;
+		for (int i = 0; i < buttons.size(); i++) {
+			if(buttons.get(i).isSelected()) {
+				System.out.println("Selected: " + products[i]);
+			}
+		}
+		System.out.println("Start date: " + sDate + " End Date: " + eDate);
+	}
+	
+	private void checkProduct(String[] prod, ArrayList<JRadioButton> b, String sDate, String eDate) {
+		String[] products = prod;
+		ArrayList<JRadioButton> buttons = b;
+		for (int i = 0; i < buttons.size(); i++) {
+			if(buttons.get(i).isSelected()) {
+				System.out.println("Selected: " + products[i]);
+			}
+		}
+		System.out.println("Start date: " + sDate + " End Date: " + eDate);
+	}
+	
 	private void makeOrder() {
-		final JFrame locationFrame = new JFrame("Make an order");
+		final JFrame orderFrame = new JFrame("Make an order");
 		JButton addBtn = new JButton("Make order");
+		final Frame oFrame = new Frame("Order");
+		oFrame.setVisible(false);
 		JButton backBtn = new JButton("Back");
 		JLabel lblId = new JLabel("Order ID:");
 		JLabel lblEmpId = new JLabel("Employee ID:");
 		JLabel lblLocId = new JLabel("Location ID:");
 		JLabel lblMemId = new JLabel("Member ID");
+		JButton oBack = new JButton("Done");
+		JButton addProdBtn = new JButton("Add products");
+		String[] names = new String[100];
+//		String[] products = controller.getProducts();
+		final ArrayList<Product> products = controller.getProducts();
+		final ArrayList<Product> orderedProducts = new ArrayList<Product>();
+		for(int i = 0; i < products.size(); i++) {
+			names[i] = products.get(i).name;
+		}
+		final JComboBox cbProducts = new JComboBox(names);
+		final JTextArea taProducts = new JTextArea("Products: \n");
 		final JTextField tfId = new JTextField();
 		final JTextField tfEmpId = new JTextField();
 		final JTextField tfLocId = new JTextField();
 		final JTextField tfMemId = new JTextField();
-		locationFrame.dispatchEvent(new WindowEvent(locationFrame, WindowEvent.WINDOW_CLOSING));
-		locationFrame.setLocation(dim.width/2-locationFrame.getSize().width/2, dim.height/2-locationFrame.getSize().height/2);
+	
+		orderFrame.dispatchEvent(new WindowEvent(orderFrame, WindowEvent.WINDOW_CLOSING));
+		orderFrame.setLocation(dim.width/2-orderFrame.getSize().width/2, dim.height/2-orderFrame.getSize().height/2);
+		oFrame.setSize(400, 300);
+		oFrame.add(taProducts);
+		oFrame.add(oBack, BorderLayout.SOUTH);
+		oFrame.add(cbProducts,BorderLayout.NORTH);
+		
+		
+		
+		
+//		cbProducts.addMouseListener(new MouseAdapter() {
+//	        @Override
+//	        public void mouseClicked(MouseEvent e) {
+//	            System.out.println(cbProducts.getSelectedItem());
+//	        }
+//	    });
+		
+		addProdBtn.addActionListener(new ActionListener(){  
+		    public void actionPerformed(ActionEvent e){
+		    	oFrame.setVisible(true);
+	    }  
+	    });  
+		
+		oBack.addActionListener(new ActionListener(){  
+		    public void actionPerformed(ActionEvent e){ 
+		    		oFrame.setVisible(false);
+		    		taProducts.setText("Products: \n");
+		    }  
+		    });  
+		
+		cbProducts.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                JComboBox comboBox = (JComboBox) event.getSource();
+//                Object selected = comboBox.getSelectedItem().toString();
+              
+//                taProducts.append(selected + "\n");
+                for (int i = 0; i < products.size(); i++) {
+                	String selected = comboBox.getSelectedItem().toString();
+                	if (selected.equals(products.get(i).name)) {
+                		orderedProducts.add(products.get(i));
+                		taProducts.append(selected + "\n");
+                	}
+                }
+//                orderedProducts.add((Product) selected);
+                
+            }
+		});
 		
 		addBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
-		    		locationFrame.setVisible(false);
+		    	ts = new Timestamp(System.currentTimeMillis());
+		    		orderFrame.setVisible(false);
+		    		System.out.println(ts.toString());
 		    		new GUI();
+		    		for(int i = 0; i < orderedProducts.size();i++) {
+		    			System.out.println(orderedProducts.get(i).name);
+		    		}
+		    			Order order = new Order(tfId.getText(), tfEmpId.getText(), tfLocId.getText(), tfMemId.getText(), orderedProducts);
+		    			controller.addOrder(order);
+//	                controller.addOrder( tfId.getText(), tfEmpId.getText(), tfLocId.getText(), tfMemId.getText(), orderedProducts);
 		    }  
 		    });  
 		
 		backBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
-	    		locationFrame.setVisible(false);
+	    		orderFrame.setVisible(false);
 	    		new GUI();
 	    }  
 	    });  
 		
-		locationFrame.setLayout(new GridLayout(8,2));
-		locationFrame.add(lblId);
-		locationFrame.add(tfId);
-		locationFrame.add(lblEmpId);
-		locationFrame.add(tfEmpId);
-		locationFrame.add(lblLocId);
-		locationFrame.add(tfLocId);
-		locationFrame.add(lblMemId);
-		locationFrame.add(tfMemId);
-		locationFrame.add(addBtn);
-		locationFrame.add(backBtn);
+		orderFrame.setLayout(new GridLayout(8,2));
+		orderFrame.add(lblId);
+		orderFrame.add(tfId);
+		orderFrame.add(lblEmpId);
+		orderFrame.add(tfEmpId);
+		orderFrame.add(lblLocId);
+		orderFrame.add(tfLocId);
+		orderFrame.add(lblMemId);
+		orderFrame.add(tfMemId);
+		orderFrame.add(addProdBtn);
+//		locationFrame.add(cbProducts);
+//		locationFrame.add(taProducts);
+		orderFrame.add(addBtn);
+		orderFrame.add(backBtn);
 		
-		locationFrame.setSize(400, 300);
-		locationFrame.setVisible(true);
-		locationFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		orderFrame.setSize(400, 300);
+		orderFrame.setVisible(true);
+		orderFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
-		
-		
+	
 	private void addIngredient() {
-		final JFrame ingredientFrame = new JFrame("Add ingredient");
-		final ArrayList<Location> locations = Controller.getLocations();
-		String[] loco = new String[locations.size()];
-		for(int i = 0; i <= locations.size();i++) {
-			loco[i] = locations.get(i).address;
-		}
+		final JFrame ingredientFrame = new JFrame("Add Ingredient");
+		ArrayList<Location> locations = controller.getLocations();
+//		String[] loco = {locations.get(0).id};
+//		for(int i = 1; i <= locations.size();i++) {
+//			loco[i] = locations.get(i).id;
+//		}
 		
-		final JComboBox cbLocation = new JComboBox(loco);
+		JComboBox cbLocation = new JComboBox();
 		JButton addBtn = new JButton("Add Ingredient");
 		JButton backBtn = new JButton("Back");
 		JLabel lblName = new JLabel("Ingredient name:");
@@ -296,7 +484,6 @@ public class GUI extends JFrame{
 		addBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
 		    	//add to db
-		    		Controller.addIngredient(tfName.getText(), Double.parseDouble(tfPrice.getText()), Double.parseDouble(tfQuan.getText()), locations.get(cbLocation.getSelectedIndex()));
 		    		ingredientFrame.setVisible(false);
 		    		new GUI();
 		    }  
@@ -383,16 +570,15 @@ public class GUI extends JFrame{
 		JButton backBtn = new JButton("Back");
 		JLabel lblFName = new JLabel("First Name:");
 		JLabel lblLName = new JLabel("Last Name:");
-		JLabel lblId = new JLabel("Employer ID:");
+//		JLabel lblId = new JLabel("Employer ID:");
 		final JTextField tfFName = new JTextField();
 		final JTextField tfLName = new JTextField();
-		final JTextField tfId = new JTextField();
+//		final JTextField tfId = new JTextField();
 		employerFrame.dispatchEvent(new WindowEvent(employerFrame, WindowEvent.WINDOW_CLOSING));
 		employerFrame.setLocation(dim.width/2-employerFrame.getSize().width/2, dim.height/2-employerFrame.getSize().height/2);
 		
 		addBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){  
-		    		System.out.println("Employer added");
 		    		Controller.addEmployer(tfFName.getText(), tfLName.getText());
 		    		employerFrame.setVisible(false);
 		    		new GUI();
@@ -411,8 +597,8 @@ public class GUI extends JFrame{
 		employerFrame.add(tfFName);
 		employerFrame.add(lblLName);
 		employerFrame.add(tfLName);
-		employerFrame.add(lblId);
-		employerFrame.add(tfId);
+//		employerFrame.add(lblId);
+//		employerFrame.add(tfId);
 		employerFrame.add(addBtn);
 		employerFrame.add(backBtn);
 		
@@ -436,7 +622,6 @@ public class GUI extends JFrame{
 		
 		addBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){  
-		    		System.out.println("Employee added");
 		    		Controller.addLocation(tfCountry.getText(), tfAddress.getText());
 		    		locationFrame.setVisible(false);
 		    		new GUI();
@@ -484,7 +669,8 @@ public class GUI extends JFrame{
 		employeeFrame.setLocation(dim.width/2-employeeFrame.getSize().width/2, dim.height/2-employeeFrame.getSize().height/2);
 		
 		addBtn.addActionListener(new ActionListener(){  
-		    public void actionPerformed(ActionEvent e){  
+		    public void actionPerformed(ActionEvent e){ 
+		    	controller.addEmployee(tfFname.getText(), tfLname.getText(), tfLocation.getText());
 		    		System.out.println("Employee added");
 		    		employeeFrame.setVisible(false);
 		    		new GUI();
@@ -493,7 +679,7 @@ public class GUI extends JFrame{
 		
 		backBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){  
-		    	Controller.addEmployee(tfFname.getText(), tfLname.getText(), tfLocation.getText());
+//		    	Controller.addEmployee(tfFname.getText(), tfLname.getText(), tfLocation.getText());
 	    		employeeFrame.setVisible(false);
 	    		new GUI();
 	    }  

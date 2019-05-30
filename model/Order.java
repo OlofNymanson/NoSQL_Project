@@ -1,16 +1,22 @@
 package model;
 
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 
 public class Order {
-	String id, empID, locID, memID;
-	double price;
-	Timestamp ts;
-	ArrayList<Product> products;
+	public String id;
+	public String empID;
+	public String locID;
+	public String memID;
+	public double price;
+	Instant ts;
+	public ArrayList<Product> products;
 	
 	public Order(String id, String empID, String locID, String memID, ArrayList<Product> products) {
-		ts = new Timestamp(System.currentTimeMillis());
+		ts = Instant.now();
 		this.id = id;
 		this.empID = empID;
 		this.locID = locID;
@@ -18,9 +24,10 @@ public class Order {
 		this.products = products;
 		
 		this.price = calculatePrice();
+		
 	}
 	
-	public Order(Timestamp ts, String id, String empID, String locID, String memID, ArrayList<Product> products) {
+	public Order(Instant ts, String id, String empID, String locID, String memID, ArrayList<Product> products) {
 		this.ts = ts;
 		this.id = id;
 		this.empID = empID;
