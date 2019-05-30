@@ -80,7 +80,7 @@ public class Database {
 	}
 
 	public Location findLocation(String locationAddress) {
-		DBCollection collection = database.getCollection("location");
+		DBCollection collection = database.getCollection("Location");
 		DBObject query = new BasicDBObject("address", locationAddress);
 		DBCursor cursor = collection.find(query);
 
@@ -330,7 +330,7 @@ public class Database {
 	public static void main(String[] args) {
 		Database db = new Database();
 		
-		db.init(); //Kommer att dubbla alla produkter om körs flera gånger. 
+//		db.init(); //Kommer att dubbla alla produkter om körs flera gånger. 
 
 //		
 //		//ADD EMPLOYEE
@@ -352,16 +352,16 @@ public class Database {
 //		System.out.println(fl.id);
 
 //		//Add Order
-		ArrayList<Product> products = new ArrayList<Product>();
-		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
-		ingredients.add(new Ingredient("milk", 2.5, 3));
-		ingredients.add(new Ingredient("beans", 2.5, 3));
-		products.add(new Product("p1", "coffee", ingredients));
-		Location fl = db.findLocation("Malmö");
-		Employee fe = db.findEmployee("emp_olny95");
-		Member fm = db.findMember("osar93");
-		Order o = new Order("ord_2", fe.id, fl.id, fm.id, products);
-		db.createOrder(o);
+//		ArrayList<Product> products = new ArrayList<Product>();
+//		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
+//		ingredients.add(new Ingredient("milk", 2.5, 3));
+//		ingredients.add(new Ingredient("beans", 2.5, 3));
+//		products.add(new Product("p1", "coffee", ingredients));
+//		Location fl = db.findLocation("Malmö");
+//		Employee fe = db.findEmployee("emp_olny95");
+//		Member fm = db.findMember("osar93");
+//		Order o = new Order("ord_2", fe.id, fl.id, fm.id, products);
+//		db.createOrder(o);
 //		System.out.println(o.id);
 		
 		
