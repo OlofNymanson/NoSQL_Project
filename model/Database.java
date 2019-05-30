@@ -402,7 +402,6 @@ public class Database {
 
 		BasicDBObject numQuery = new BasicDBObject("SSN", SSN);
 
-
 		DBCursor cursor = collection.find(numQuery);
 
 		while (cursor.hasNext()) {
@@ -427,21 +426,19 @@ public class Database {
 
 		}
 
-		BasicDBObject idQuery; 
+		BasicDBObject idQuery;
 		int numOfSales = 0;
 
 		collection = database.getCollection("orders");
 		for (int i = 0; i < memberID.size(); ++i) {
 			idQuery = new BasicDBObject("memID", memberID.get(i));
-			 cursor = collection.find(idQuery);
-			 while(cursor.hasNext()) {
-				 numOfSales ++;
-				 cursor.next();
-				 
-			 }
+			cursor = collection.find(idQuery);
+			while (cursor.hasNext()) {
+				numOfSales++;
+				cursor.next();
 
-			
-			
+			}
+
 		}
 
 		return numOfSales;
@@ -450,20 +447,43 @@ public class Database {
 
 	public int getNumberOfSpecificItems(String item, Instant from, Instant to) {
 		DBCollection collection = database.getCollection("order");
-		DBObject query = new BasicDBObject("products", new BasicDBObject("$elemMatch", new BasicDBObject("name", item)));
-		
+		DBObject query = new BasicDBObject("products",
+				new BasicDBObject("$elemMatch", new BasicDBObject("name", item)));
+
 		DBCursor cursor = collection.find(query);
-		
+
 		int counter = 0;
-		
-		while(cursor.hasNext()) {
+
+		while (cursor.hasNext()) {
 			counter++;
 			cursor.next();
 		}
-		
+
 		return counter;
 	}
-	
+
+	public int getStockForItem(String item, String location) {
+		DBCollection collection = database.getCollection("location");
+		int numOfItems = 0;
+
+		DBObject query = new BasicDBObject("address", location);
+		DBCursor cursor = collection.find(query);
+
+		while (cursor.hasNext()) {
+			ArrayList<DBObject> list = (ArrayList<DBObject>) cursor.next().get("stock");
+
+			for (DBObject obj : list) {
+				if(obj.get("name").toString() == item  ) {
+					numOfItems += Integer.parseInt(obj.get("price").toString());
+				}
+
+			}
+
+		}
+
+		return numOfItems;
+	}
+
 	public static void main(String[] args) {
 		Database db = new Database();
 
