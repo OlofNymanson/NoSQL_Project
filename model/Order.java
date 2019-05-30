@@ -12,11 +12,11 @@ public class Order {
 	public String locID;
 	public String memID;
 	public double price;
-	public Timestamp ts;
+	Instant ts;
 	public ArrayList<Product> products;
 	
 	public Order(String id, String empID, String locID, String memID, ArrayList<Product> products) {
-		ts = new Timestamp(System.currentTimeMillis());
+		ts = Instant.now();
 		this.id = id;
 		this.empID = empID;
 		this.locID = locID;
@@ -27,7 +27,7 @@ public class Order {
 		
 	}
 	
-	public Order(Timestamp ts, String id, String empID, String locID, String memID, ArrayList<Product> products) {
+	public Order(Instant ts, String id, String empID, String locID, String memID, ArrayList<Product> products) {
 		this.ts = ts;
 		this.id = id;
 		this.empID = empID;

@@ -2,6 +2,7 @@ package model;
 
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -231,7 +232,7 @@ public class Database {
 		}
 
 		collection.insert(new BasicDBObject("_id", o.id).append("empID", o.empID).append("locID", o.locID)
-				.append("memID", o.memID).append("_ts", o.ts).append("price", o.price).append("products", products));
+				.append("memID", o.memID).append("_ts", o.ts.toString()).append("price", o.price).append("products", products));
 
 		addCoffeeCount(findMember(o.memID));
 	}
@@ -269,12 +270,16 @@ public class Database {
 	// is added for every order
 	private void addCoffeeCount(Member member) {
 		DBCollection collection = database.getCollection("Member");
-		DBObject query = new BasicDBObject("_id", member.id);
+		DBObject query = new BasicDBObject("SSN", member.SSN);
 		DBCursor cursor = collection.find(query);
-		int currentCoffeeCount = (Integer) cursor.one().get("coffeeCount");
-		DBObject update = new BasicDBObject("$set", new BasicDBObject("coffeeCount", ++currentCoffeeCount));
-
-		collection.findAndModify(query, update);
+		try {
+			int currentCoffeeCount = (Integer) cursor.one().get("coffeeCount");
+			DBObject update = new BasicDBObject("$set", new BasicDBObject("coffeeCount", ++currentCoffeeCount));
+			collection.findAndModify(query, update);
+		}
+		catch(Exception e) {
+			
+		}
 	}
 
 	public boolean freeCoffee(Member member) {
@@ -365,34 +370,22 @@ public class Database {
 
 	}
 
-	public ArrayList<Order> getOrdersTimePeriod(Timestamp from, Timestamp to) {
+	public ArrayList<Order> getOrdersTimePeriod(Instant from, Instant to) {
 		ArrayList<Order> orderList = new ArrayList<Order>();
 		DBCollection collection = database.getCollection("order");
 		
-		System.out.println(from.toString());
+		BasicDBObject query = new BasicDBObject("_ts", new BasicDBObject("$gt", from.toString()).append("$lte", to.toString()));
 		
-		BasicDBObject query = new BasicDBObject("_ts",
-				new BasicDBObject("$gt", from.toString()).append("$lte", to.toString()));
 		DBCursor cursor = collection.find(query);
 		
-		System.out.println(query);
-		
-		System.out.println("XXX");
-		
-		System.out.println(cursor.one());
-
 		while (cursor.hasNext()) {
 			DBObject DBOrder = cursor.next();
 			
 			ArrayList<Product> products = new ArrayList<Product>();
-			
+
 			Order order = findOrder(DBOrder.get("_id").toString());
 			
-			System.out.println(order);
-			
-			orderList.add(new Order((Timestamp) DBOrder.get("dateAndTime"), (String) DBOrder.get("id"),
-					(String) DBOrder.get("employeeId"), (String) DBOrder.get("locationId"), (String) DBOrder.get("memberId"),
-					products));
+			orderList.add(order);
 		}
 
 		return orderList;
@@ -428,9 +421,9 @@ public class Database {
 //		ingredients.add(new Ingredient("beans", 2.5, 3));
 //		products.add(new Product("p1", "coffee", ingredients));
 //		Location fl = db.findLocation("Malmö");
-//		Employee fe = db.findEmployee("emp_olny95");
-//		Member fm = db.findMember("osar93");
-//		Order o = new Order("ord_208", fe.id, fl.id, fm.id, products);
+//		Employee fe = db.findEmployee("Gustav", "von Flemming", "London");
+//		Member fm = db.findMember("19940901");	//MUST USE SSN
+//		Order o = new Order("ord_220", fe.id, fl.id, fm.SSN, products);
 //		db.createOrder(o);
 //		System.out.println(o.id);
 		
@@ -455,6 +448,14 @@ public class Database {
 		
 		//Comment - FUNKAR
 //		db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
+		
+		//Mellan tidsperioder:
+		Instant time = Instant.now();
+		Instant before = Instant.now().minusSeconds(1000000000);
+		
+		for(Order ord : db.getOrdersTimePeriod(before, time)) {
+			System.out.println(ord.products);
+		}
 		
 		System.out.println("X");
 	}
