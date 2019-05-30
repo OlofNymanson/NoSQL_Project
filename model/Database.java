@@ -3,6 +3,7 @@ package model;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -393,7 +394,6 @@ public class Database {
 		}
 
 		return orderList;
-
 	}
 
 	public int getNumberOfSalesCustomer(String SSN) {
@@ -402,12 +402,12 @@ public class Database {
 
 		BasicDBObject numQuery = new BasicDBObject("SSN", SSN);
 
+
 		DBCursor cursor = collection.find(numQuery);
 
 		while (cursor.hasNext()) {
 			numOfSales++;
 			cursor.next();
-
 		}
 
 		return numOfSales;
@@ -448,6 +448,22 @@ public class Database {
 
 	}
 
+	public int getNumberOfSpecificItems(String item, Instant from, Instant to) {
+		DBCollection collection = database.getCollection("order");
+		DBObject query = new BasicDBObject("products", new BasicDBObject("$elemMatch", new BasicDBObject("name", item)));
+		
+		DBCursor cursor = collection.find(query);
+		
+		int counter = 0;
+		
+		while(cursor.hasNext()) {
+			counter++;
+			cursor.next();
+		}
+		
+		return counter;
+	}
+	
 	public static void main(String[] args) {
 		Database db = new Database();
 

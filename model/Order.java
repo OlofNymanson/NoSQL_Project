@@ -22,9 +22,7 @@ public class Order {
 		this.locID = locID;
 		this.memID = memID;
 		this.products = products;
-		
 		this.price = calculatePrice();
-		
 	}
 	
 	public Order(Instant ts, String id, String empID, String locID, String memID, ArrayList<Product> products) {
@@ -34,7 +32,6 @@ public class Order {
 		this.locID = locID;
 		this.memID = memID;
 		this.products = products;
-		
 		this.price = calculatePrice();
 	}
 	
