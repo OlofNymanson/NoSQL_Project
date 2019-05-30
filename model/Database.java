@@ -93,6 +93,7 @@ public class Database {
 
 		Location l = new Location(cursor.one().get("_id").toString(), cursor.one().get("country").toString(),
 				cursor.one().get("address").toString());
+		
 		return l;
 	}
 
@@ -138,14 +139,14 @@ public class Database {
 		ArrayList<Ingredient> stock = new ArrayList<Ingredient>();
 		DBCollection collection = database.getCollection("Location");
 
-		DBObject query = new BasicDBObject("_id", location.id);
+		DBObject query = new BasicDBObject("address", location.address);
 		DBCursor cursor = collection.find(query);
-
+		
 		ArrayList<DBObject> list = (ArrayList<DBObject>) cursor.one().get("stock");
 
 		for (DBObject dbo : list) {
 			stock.add(
-					new Ingredient((String) dbo.get("name"), (Double) dbo.get("price"), (Double) dbo.get("quantity")));
+					new Ingredient((String) dbo.get("name"), Double.parseDouble(dbo.get("price").toString()), Double.parseDouble(dbo.get("quantity").toString())));
 		}
 
 		return stock;
@@ -182,7 +183,7 @@ public class Database {
 					}
 				}
 
-				DBObject query = new BasicDBObject("_id", order.locID).append("stock",
+				DBObject query = new BasicDBObject("address", order.locID).append("stock",
 						new BasicDBObject("$elemMatch", new BasicDBObject("name", ip.name)));
 				DBObject update = new BasicDBObject("$set",
 						new BasicDBObject("stock.$.quantity", currentQuantity - ip.quantity));
@@ -192,7 +193,10 @@ public class Database {
 	}
 
 	private boolean enoughIngredientsInStock(Order order) {
+		System.out.println(order.locID);
+		
 		ArrayList<Ingredient> locationStock = getStock(findLocation(order.locID));
+		
 
 		// förlåt
 		for (Ingredient ingredientInStock : locationStock) {
@@ -402,7 +406,7 @@ public class Database {
 		
 //		//ADD EMPLOYEE - FUNKAR
 //		db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "loc_malmö1"));
-		System.out.println(db.findEmployee("Gustav", "von Flemming", "London").fName);
+//		System.out.println(db.findEmployee("Gustav", "von Flemming", "London").fName);
 //		
 //		//ADD MEMBER - FUNKAR
 //		db.addMember(new Member("osar93", "Oscar", "Arréhn", "Hittepågatan", "Student", "1993-02-11"));
@@ -434,17 +438,17 @@ public class Database {
 //		Order o = db.findOrder("ord_99");
 //		System.out.println(o.memID + ", " + o.price);
 		
-		//Take from stock:
+		//Take from stock: - FUNKAR
 //		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
 //		ArrayList<Product> products = new ArrayList<Product>();
 //		
-//		ingredients.add(new Ingredient("Milk", 2.5, 2));
-//		ingredients.add(new Ingredient("Coffee Beans", 2.5, 2));
+//		ingredients.add(new Ingredient("Cream", 2.5, 100));
+//		ingredients.add(new Ingredient("Caramel", 2.5, 100));
 //		
 //		products.add(new Product("1", "Coffee", ingredients));
 //		
 //		try {
-//			db.takeFromStock(new Order("1", "1", "loc_malmö1", "1", products));
+//			db.takeFromStock(new Order("1", "1", "Malmö", "1", products));
 //		} catch (Exception e) {
 //			e.printStackTrace();
 //		}

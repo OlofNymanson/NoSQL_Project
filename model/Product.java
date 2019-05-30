@@ -3,7 +3,8 @@ package model;
 import java.util.ArrayList;
 
 public class Product {
-	String id, name;
+	String id;
+	public String name;
 	double price;
 	ArrayList<Ingredient> ingredients;
 	

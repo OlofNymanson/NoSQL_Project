@@ -7,10 +7,13 @@ import java.time.Instant;
 import java.util.ArrayList;
 
 public class Order {
-	String id, empID, locID, memID;
-	double price;
-	Timestamp ts;
-	ArrayList<Product> products;
+	public String id;
+	public String empID;
+	public String locID;
+	public String memID;
+	public double price;
+	public Timestamp ts;
+	public ArrayList<Product> products;
 	
 	public Order(String id, String empID, String locID, String memID, ArrayList<Product> products) {
 		ts = new Timestamp(System.currentTimeMillis());

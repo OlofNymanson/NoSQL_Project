@@ -1,7 +1,10 @@
 package model;
 
 public class Employee {
-	String id, fName, lName, locationID;
+	String id;
+	public String fName;
+	public String lName;
+	public String locationID;
 	
 	public Employee(String id, String fName, String lName, String locationID) {
 		this.id = id;
