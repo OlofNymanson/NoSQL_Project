@@ -1,7 +1,5 @@
 package model;
 
-
-
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -16,7 +14,6 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-
 
 import java.sql.*;
 
@@ -98,7 +95,7 @@ public class Database {
 
 		Location l = new Location(cursor.one().get("_id").toString(), cursor.one().get("country").toString(),
 				cursor.one().get("address").toString());
-		
+
 		return l;
 	}
 
@@ -129,7 +126,9 @@ public class Database {
 			}
 
 			update = new BasicDBObject("$set",
-					new BasicDBObject("stock.$.quantity", currentQuantity + ingredient.quantity)); // find current ingredient quantity and add
+					new BasicDBObject("stock.$.quantity", currentQuantity + ingredient.quantity)); // find current
+																									// ingredient
+																									// quantity and add
 
 		} else {
 			locQuery = new BasicDBObject("_id", l);
@@ -146,12 +145,12 @@ public class Database {
 
 		DBObject query = new BasicDBObject("address", location.address);
 		DBCursor cursor = collection.find(query);
-		
+
 		ArrayList<DBObject> list = (ArrayList<DBObject>) cursor.one().get("stock");
 
 		for (DBObject dbo : list) {
-			stock.add(
-					new Ingredient((String) dbo.get("name"), Double.parseDouble(dbo.get("price").toString()), Double.parseDouble(dbo.get("quantity").toString())));
+			stock.add(new Ingredient((String) dbo.get("name"), Double.parseDouble(dbo.get("price").toString()),
+					Double.parseDouble(dbo.get("quantity").toString())));
 		}
 
 		return stock;
@@ -199,9 +198,8 @@ public class Database {
 
 	private boolean enoughIngredientsInStock(Order order) {
 		System.out.println(order.locID);
-		
+
 		ArrayList<Ingredient> locationStock = getStock(findLocation(order.locID));
-		
 
 		// förlåt
 		for (Ingredient ingredientInStock : locationStock) {
@@ -236,7 +234,8 @@ public class Database {
 		}
 
 		collection.insert(new BasicDBObject("_id", o.id).append("empID", o.empID).append("locID", o.locID)
-				.append("memID", o.memID).append("_ts", o.ts.toString()).append("price", o.price).append("products", products));
+				.append("memID", o.memID).append("_ts", o.ts.toString()).append("price", o.price)
+				.append("products", products));
 
 		addCoffeeCount(findMember(o.memID));
 	}
@@ -247,26 +246,27 @@ public class Database {
 		DBCursor cursor = collection.find(query);
 
 		ArrayList<Product> products = new ArrayList<Product>();
-		
+
 		DBObject order = cursor.one();
-		
-		ArrayList<DBObject> productsInOrder = (ArrayList)order.get(("products"));
-		
-		for(DBObject dbo : productsInOrder) {
-			ArrayList<DBObject> DBIngredients = (ArrayList)dbo.get("ingredients");
+
+		ArrayList<DBObject> productsInOrder = (ArrayList) order.get(("products"));
+
+		for (DBObject dbo : productsInOrder) {
+			ArrayList<DBObject> DBIngredients = (ArrayList) dbo.get("ingredients");
 			ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
-			
-			for(DBObject dbo2 : DBIngredients) {
-				ingredients.add(new Ingredient((String)dbo2.get("name"), Double.parseDouble(dbo2.get("price").toString()), Double.parseDouble(dbo2.get("quantity").toString())));
+
+			for (DBObject dbo2 : DBIngredients) {
+				ingredients
+						.add(new Ingredient((String) dbo2.get("name"), Double.parseDouble(dbo2.get("price").toString()),
+								Double.parseDouble(dbo2.get("quantity").toString())));
 			}
-			
+
 			products.add(new Product(dbo.get("_id").toString(), dbo.get("name").toString(), ingredients));
 		}
-		
-		
+
 		Order o = new Order(cursor.one().get("_id").toString(), cursor.one().get("empID").toString(),
 				cursor.one().get("locID").toString(), cursor.one().get("memID").toString(), products);
-		
+
 		return o;
 
 	}
@@ -280,9 +280,8 @@ public class Database {
 			int currentCoffeeCount = (Integer) cursor.one().get("coffeeCount");
 			DBObject update = new BasicDBObject("$set", new BasicDBObject("coffeeCount", ++currentCoffeeCount));
 			collection.findAndModify(query, update);
-		}
-		catch(Exception e) {
-			
+		} catch (Exception e) {
+
 		}
 	}
 
@@ -374,73 +373,107 @@ public class Database {
 
 	}
 
-
 	public ArrayList<Order> getOrdersTimePeriod(Instant from, Instant to) {
 		ArrayList<Order> orderList = new ArrayList<Order>();
 		DBCollection collection = database.getCollection("order");
-		
-		BasicDBObject query = new BasicDBObject("_ts", new BasicDBObject("$gt", from.toString()).append("$lte", to.toString()));
-		
+
+		BasicDBObject query = new BasicDBObject("_ts",
+				new BasicDBObject("$gt", from.toString()).append("$lte", to.toString()));
+
 		DBCursor cursor = collection.find(query);
-		
+
 		while (cursor.hasNext()) {
 			DBObject DBOrder = cursor.next();
-			
+
 			ArrayList<Product> products = new ArrayList<Product>();
 
 			Order order = findOrder(DBOrder.get("_id").toString());
-			
+
 			orderList.add(order);
 		}
 
 		return orderList;
 
 	}
-	
+
 	public int getNumberOfSalesCustomer(String SSN) {
 		DBCollection collection = database.getCollection("order");
-		 int numOfSales = 0;
-		
+		int numOfSales = 0;
+
 		BasicDBObject numQuery = new BasicDBObject("SSN", SSN);
-		
+
 		DBCursor cursor = collection.find(numQuery);
-		
-		while(cursor.hasNext()) {
+
+		while (cursor.hasNext()) {
 			numOfSales++;
 			cursor.next();
 
 		}
-		
-		
+
 		return numOfSales;
-		
+
+	}
+
+	public int getNumberOfSalesOccupation(String occ) {
+		DBCollection collection = database.getCollection("member");
+		ArrayList<String> memberID = new ArrayList<String>();
+		DBCursor cursor = collection.find();
+
+		while (cursor.hasNext()) {
+			DBObject orders = cursor.next();
+			if (orders.get("Ocupation".toString()) == occ) {
+				memberID.add(orders.get("SSN").toString());
+			}
+
+		}
+
+		BasicDBObject idQuery; 
+		int numOfSales = 0;
+
+		collection = database.getCollection("orders");
+		for (int i = 0; i < memberID.size(); ++i) {
+			idQuery = new BasicDBObject("memID", memberID.get(i));
+			 cursor = collection.find(idQuery);
+			 while(cursor.hasNext()) {
+				 numOfSales ++;
+				 cursor.next();
+				 
+			 }
+
+			
+			
+		}
+
+		return numOfSales;
+
 	}
 
 	public static void main(String[] args) {
 		Database db = new Database();
 
+		db.init(); // Kommer att dubbla alla produkter om körs flera gånger.
 
-		
-		db.init(); //Kommer att dubbla alla produkter om körs flera gånger. 
-		
-//		//ADD EMPLOYEE - FUNKAR
-//		db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "loc_malmö1"));
-//		System.out.println(db.findEmployee("Gustav", "von Flemming", "London").fName);
-//		
-//		//ADD MEMBER - FUNKAR
-//		db.addMember(new Member("osar93", "Oscar", "Arréhn", "Hittepågatan", "Student", "1993-02-11"));
-//		Member m = db.findMember("19980901");
-//		System.out.println(m.fName + ", " + m.address);
-		
-//		//Add Location - FUNKAR
-//		Location l = new Location("loc_malmö2", "Storgatan 2", "Skåneland");
-//		db.addLocation(l);
-	
-//		//Find Location - FUNKAR
-//		Location fl = db.findLocation("Malmö"); //adress
-//		System.out.println(fl.country);
+		// //ADD EMPLOYEE - FUNKAR
+		// db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson",
+		// "loc_malmö1"));
+		// System.out.println(db.findEmployee("Gustav", "von Flemming",
+		// "London").fName);
+		//
+		// //ADD MEMBER - FUNKAR
+		// db.addMember(new Member("osar93", "Oscar", "Arréhn", "Hittepågatan",
+		// "Student", "1993-02-11"));
+		// Member m = db.findMember("19980901");
+		// System.out.println(m.fName + ", " + m.address);
 
-		//Add Order - FUNKAR
+		// //Add Location - FUNKAR
+		// Location l = new Location("loc_malmö2", "Storgatan 2", "Skåneland");
+		// db.addLocation(l);
+
+		// //Find Location - FUNKAR
+		// Location fl = db.findLocation("Malmö"); //adress
+		// System.out.println(fl.country);
+
+		// Add Order - FUNKAR
 		ArrayList<Product> products = new ArrayList<Product>();
 		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
 		ingredients.add(new Ingredient("milk", 2.5, 3));
@@ -448,41 +481,41 @@ public class Database {
 		products.add(new Product("p1", "coffee", ingredients));
 		Location fl = db.findLocation("Malmö");
 		Employee fe = db.findEmployee("Gustav", "von Flemming", "London");
-		Member fm = db.findMember("19940901");	//MUST USE SSN
+		Member fm = db.findMember("19940901"); // MUST USE SSN
 		Order o = new Order("ord_220", fe.id, fl.id, fm.SSN, products);
 		db.createOrder(o);
 		System.out.println(o.id);
-		
-		//Find Order - FUNKAR
-//		Order o = db.findOrder("ord_99");
-//		System.out.println(o.memID + ", " + o.price);
-		
-		//Take from stock: - FUNKAR
-//		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
-//		ArrayList<Product> products = new ArrayList<Product>();
-//		
-//		ingredients.add(new Ingredient("Cream", 2.5, 100));
-//		ingredients.add(new Ingredient("Caramel", 2.5, 100));
-//		
-//		products.add(new Product("1", "Coffee", ingredients));
-//		
-//		try {
-//			db.takeFromStock(new Order("1", "1", "Malmö", "1", products));
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-		
-		//Comment - FUNKAR
-//		db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
-		
-		//Mellan tidsperioder:
+
+		// Find Order - FUNKAR
+		// Order o = db.findOrder("ord_99");
+		// System.out.println(o.memID + ", " + o.price);
+
+		// Take from stock: - FUNKAR
+		// ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
+		// ArrayList<Product> products = new ArrayList<Product>();
+		//
+		// ingredients.add(new Ingredient("Cream", 2.5, 100));
+		// ingredients.add(new Ingredient("Caramel", 2.5, 100));
+		//
+		// products.add(new Product("1", "Coffee", ingredients));
+		//
+		// try {
+		// db.takeFromStock(new Order("1", "1", "Malmö", "1", products));
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
+
+		// Comment - FUNKAR
+		// db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
+
+		// Mellan tidsperioder:
 		Instant time = Instant.now();
 		Instant before = Instant.now().minusSeconds(1000000000);
-		
-		for(Order ord : db.getOrdersTimePeriod(before, time)) {
+
+		for (Order ord : db.getOrdersTimePeriod(before, time)) {
 			System.out.println(ord.products);
 		}
-		
+
 		System.out.println("X");
 	}
 }
