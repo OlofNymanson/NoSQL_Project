@@ -401,14 +401,13 @@ public class Database {
 		DBCollection collection = database.getCollection("order");
 		 int numOfSales = 0;
 		
-		BasicDBObject numQuery = new BasicDBObject("SSN", SSN);
+		BasicDBObject numQuery = new BasicDBObject("memID", SSN);
 		
 		DBCursor cursor = collection.find(numQuery);
 		
 		while(cursor.hasNext()) {
 			numOfSales++;
 			cursor.next();
-
 		}
 		
 		
@@ -456,6 +455,7 @@ public class Database {
 //		Location fl = db.findLocation("Malmö"); //adress
 //		System.out.println(fl.country);
 
+		//CREATE ORDER
 //		ArrayList<Product> products = new ArrayList<Product>();
 //		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
 //		ingredients.add(new Ingredient("milk", 2.5, 3));
@@ -463,8 +463,8 @@ public class Database {
 //		products.add(new Product("p1", "coffee", ingredients));
 //		Location fl = db.findLocation("Malmö");
 //		Employee fe = db.findEmployee("Gustav", "von Flemming", "London");
-//		Member fm = db.findMember("19940901");	//MUST USE SSN
-//		Order o = new Order("ord_220", fe.id, fl.id, fm.SSN, products);
+//		Member fm = db.findMember("19910109");	//MUST USE SSN
+//		Order o = new Order("ord_232", fe.id, fl.id, fm.SSN, products);
 //		db.createOrder(o);
 //		System.out.println(o.id);
 		
@@ -499,7 +499,8 @@ public class Database {
 //		}
 		
 		//FUNKAR:
-		System.out.println(db.getNumberOfSpecificItems("coffee", Instant.now().minusSeconds(1000000), Instant.now()));
+//		System.out.println(db.getNumberOfSpecificItems("coffee", Instant.now().minusSeconds(1000000), Instant.now()));
+//		System.out.println(db.getNumberOfSalesCustomer("19910109"));
 		
 		System.out.println("X");
 	}
