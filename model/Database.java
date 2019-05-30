@@ -1,11 +1,14 @@
 package model;
 
+
+
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Filter;
 import com.mongodb.BasicDBObject;
@@ -14,6 +17,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+
 
 import java.sql.*;
 
@@ -371,6 +375,7 @@ public class Database {
 
 	}
 
+
 	public ArrayList<Order> getOrdersTimePeriod(Instant from, Instant to) {
 		ArrayList<Order> orderList = new ArrayList<Order>();
 		DBCollection collection = database.getCollection("order");
@@ -391,6 +396,25 @@ public class Database {
 
 		return orderList;
 	}
+	
+	public int getNumberOfSalesCustomer(String SSN) {
+		DBCollection collection = database.getCollection("order");
+		 int numOfSales = 0;
+		
+		BasicDBObject numQuery = new BasicDBObject("SSN", SSN);
+		
+		DBCursor cursor = collection.find(numQuery);
+		
+		while(cursor.hasNext()) {
+			numOfSales++;
+			cursor.next();
+
+		}
+		
+		
+		return numOfSales;
+		
+	}
 
 	public int getNumberOfSpecificItems(String item, Instant from, Instant to) {
 		DBCollection collection = database.getCollection("order");
@@ -410,8 +434,10 @@ public class Database {
 	
 	public static void main(String[] args) {
 		Database db = new Database();
+
+
 		
-		db.init(); //Kommer att dubbla alla produkter om körs flera gånger. 
+//		db.init(); //Kommer att dubbla alla produkter om körs flera gånger. 
 		
 //		//ADD EMPLOYEE - FUNKAR
 //		db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "loc_malmö1"));
@@ -430,7 +456,6 @@ public class Database {
 //		Location fl = db.findLocation("Malmö"); //adress
 //		System.out.println(fl.country);
 
-//		//Add Order - FUNKAR
 //		ArrayList<Product> products = new ArrayList<Product>();
 //		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
 //		ingredients.add(new Ingredient("milk", 2.5, 3));
@@ -439,7 +464,7 @@ public class Database {
 //		Location fl = db.findLocation("Malmö");
 //		Employee fe = db.findEmployee("Gustav", "von Flemming", "London");
 //		Member fm = db.findMember("19940901");	//MUST USE SSN
-//		Order o = new Order("ord_222", fe.id, fl.id, fm.SSN, products);
+//		Order o = new Order("ord_220", fe.id, fl.id, fm.SSN, products);
 //		db.createOrder(o);
 //		System.out.println(o.id);
 		
