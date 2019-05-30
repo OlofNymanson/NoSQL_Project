@@ -396,13 +396,30 @@ public class Database {
 		return orderList;
 
 	}
+	
+	public int getNumberOfSalesCustomer(String SSN) {
+		DBCollection collection = database.getCollection("order");
+		 int numOfSales = 0;
+		
+		BasicDBObject numQuery = new BasicDBObject("SSN", SSN);
+		
+		DBCursor cursor = collection.find(numQuery);
+		
+		while(cursor.hasNext()) {
+			numOfSales++;
+		}
+		
+		
+		return numOfSales;
+		
+	}
 
 	public static void main(String[] args) {
 		Database db = new Database();
 
 
 		
-//		db.init(); //Kommer att dubbla alla produkter om körs flera gånger. 
+		db.init(); //Kommer att dubbla alla produkter om körs flera gånger. 
 		
 //		//ADD EMPLOYEE - FUNKAR
 //		db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "loc_malmö1"));
@@ -421,18 +438,18 @@ public class Database {
 //		Location fl = db.findLocation("Malmö"); //adress
 //		System.out.println(fl.country);
 
-//		//Add Order - FUNKAR
-//		ArrayList<Product> products = new ArrayList<Product>();
-//		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
-//		ingredients.add(new Ingredient("milk", 2.5, 3));
-//		ingredients.add(new Ingredient("beans", 2.5, 3));
-//		products.add(new Product("p1", "coffee", ingredients));
-//		Location fl = db.findLocation("Malmö");
-//		Employee fe = db.findEmployee("Gustav", "von Flemming", "London");
-//		Member fm = db.findMember("19940901");	//MUST USE SSN
-//		Order o = new Order("ord_220", fe.id, fl.id, fm.SSN, products);
-//		db.createOrder(o);
-//		System.out.println(o.id);
+		//Add Order - FUNKAR
+		ArrayList<Product> products = new ArrayList<Product>();
+		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
+		ingredients.add(new Ingredient("milk", 2.5, 3));
+		ingredients.add(new Ingredient("beans", 2.5, 3));
+		products.add(new Product("p1", "coffee", ingredients));
+		Location fl = db.findLocation("Malmö");
+		Employee fe = db.findEmployee("Gustav", "von Flemming", "London");
+		Member fm = db.findMember("19940901");	//MUST USE SSN
+		Order o = new Order("ord_220", fe.id, fl.id, fm.SSN, products);
+		db.createOrder(o);
+		System.out.println(o.id);
 		
 		//Find Order - FUNKAR
 //		Order o = db.findOrder("ord_99");
@@ -465,6 +482,5 @@ public class Database {
 		}
 		
 		System.out.println("X");
->>>>>>> 018a693357922c665809d29025dd89ea71439cff
 	}
 }
