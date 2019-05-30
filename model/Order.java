@@ -20,6 +20,17 @@ public class Order {
 		this.price = calculatePrice();
 	}
 	
+	public Order(Timestamp ts, String id, String empID, String locID, String memID, ArrayList<Product> products) {
+		this.ts = ts;
+		this.id = id;
+		this.empID = empID;
+		this.locID = locID;
+		this.memID = memID;
+		this.products = products;
+		
+		this.price = calculatePrice();
+	}
+	
 	private double calculatePrice() {
 		double sum = 0;
 		
