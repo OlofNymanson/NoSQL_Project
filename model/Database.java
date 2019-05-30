@@ -1,13 +1,19 @@
 package model;
 
 import java.net.UnknownHostException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Filter;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+
+import java.sql.*;
 
 public class Database {
 	private MongoClient client;
@@ -25,15 +31,16 @@ public class Database {
 	public void addMember(Member m) {
 		DBCollection collection = database.getCollection("Member");
 		collection.insert(new BasicDBObject("_id", m.id).append("fName", m.fName).append("lName", m.lName)
-				.append("address", m.address).append("occupation", m.occupation).append("SSN", m.SSN).append("coffeeCount", 0));
+				.append("address", m.address).append("occupation", m.occupation).append("SSN", m.SSN)
+				.append("coffeeCount", 0));
 	}
 
-	public Member findMember(String id) {
+	public Member findMember(String SSN) {
 		DBCollection collection = database.getCollection("Member");
-		DBObject query = new BasicDBObject("_id", id);
+		DBObject query = new BasicDBObject("SSN", SSN);
 		DBCursor cursor = collection.find(query);
 
-		Member m = new Member((String) cursor.one().get("_id"), (String) cursor.one().get("fName"),
+		Member m = new Member(cursor.one().get("_id").toString(), (String) cursor.one().get("fName"),
 				(String) cursor.one().get("lName"), (String) cursor.one().get("address"),
 				(String) cursor.one().get("occupation"), (String) cursor.one().get("SSN"));
 
@@ -43,15 +50,15 @@ public class Database {
 	public void addEmployee(Employee emp) {
 		DBCollection collection = database.getCollection("Employee");
 		collection.insert(new BasicDBObject("_id", emp.id).append("fName", emp.fName).append("lName", emp.lName)
-				.append("locationID", emp.locationID));
+				.append("location", emp.locationID));
 	}
 
-	public Employee findEmployee(String id) {
+	public Employee findEmployee(String fName, String lName, String location) {
 		DBCollection collection = database.getCollection("Employee");
-		DBObject query = new BasicDBObject("_id", id);
+		DBObject query = new BasicDBObject("fName", fName).append("lName", lName).append("location", location);
 		DBCursor cursor = collection.find(query);
 
-		Employee emp = new Employee((String) cursor.one().get("_id"), (String) cursor.one().get("fName"),
+		Employee emp = new Employee(cursor.one().get("_id").toString(), (String) cursor.one().get("fName"),
 				(String) cursor.one().get("lName"), (String) cursor.one().get("locationID"));
 
 		return emp;
@@ -205,21 +212,23 @@ public class Database {
 
 	public void createOrder(Order o) {
 		DBCollection collection = database.getCollection("order");
+
 		ArrayList<DBObject> products = new ArrayList<DBObject>();
-		
-		for(Product p : o.products) {
+
+		for (Product p : o.products) {
 			ArrayList<DBObject> ingredients = new ArrayList<DBObject>();
-			
-			for(Ingredient i : p.ingredients) {
-				ingredients.add(new BasicDBObject("name", i.name).append("price", i.price).append("quantity", i.quantity));
+
+			for (Ingredient i : p.ingredients) {
+				ingredients
+						.add(new BasicDBObject("name", i.name).append("price", i.price).append("quantity", i.quantity));
 			}
-			
+
 			products.add(new BasicDBObject("_id", p.id).append("name", p.name).append("ingredients", ingredients));
 		}
-		
-		collection.insert(new BasicDBObject("_id", o.id).append("empID", o.empID).append("locID", o.locID).append("memID", o.memID)
-				.append("_ts", o.ts).append("price", o.price).append("products", products));
-		
+
+		collection.insert(new BasicDBObject("_id", o.id).append("empID", o.empID).append("locID", o.locID)
+				.append("memID", o.memID).append("_ts", o.ts).append("price", o.price).append("products", products));
+
 		addCoffeeCount(findMember(o.memID));
 	}
 
@@ -252,33 +261,35 @@ public class Database {
 		return o;
 
 	}
-	
-	//is added for every order
+
+	// is added for every order
 	private void addCoffeeCount(Member member) {
 		DBCollection collection = database.getCollection("Member");
 		DBObject query = new BasicDBObject("_id", member.id);
-		int coffeeCount = getCoffeeCount(member);
-		DBObject update = new BasicDBObject("$set", new BasicDBObject("coffeeCount", ++coffeeCount));
+		DBCursor cursor = collection.find(query);
+		int currentCoffeeCount = (Integer) cursor.one().get("coffeeCount");
+		DBObject update = new BasicDBObject("$set", new BasicDBObject("coffeeCount", ++currentCoffeeCount));
+
 		collection.findAndModify(query, update);
 	}
 
 	public boolean freeCoffee(Member member) {
 		int coffeeCount = getCoffeeCount(member);
-		
-		if(coffeeCount % 10 == 0) {
+
+		if (coffeeCount % 10 == 0) {
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	private int getCoffeeCount(Member member) {
 		DBCollection collection = database.getCollection("Member");
 		DBObject query = new BasicDBObject("_id", member.id);
 		DBCursor cursor = collection.find(query);
-		return (Integer)cursor.one().get("coffeeCount");
+		return (Integer) cursor.one().get("coffeeCount");
 	}
-	
+
 	public void addComment(Comment c) {
 		DBCollection collection = database.getCollection("Employee");
 		DBObject query = new BasicDBObject("_id", c.employeeID);
@@ -298,22 +309,23 @@ public class Database {
 
 		while (cursor.hasNext()) {
 			DBObject product = cursor.next();
-			
+
 			ArrayList<Ingredient> ingredientList = new ArrayList<Ingredient>();
-			
-			ArrayList<DBObject> list = (ArrayList)product.get("ingredients");
-			
-			for(DBObject dbo : list) {
-				ingredientList.add(new Ingredient((String)dbo.get("name"), Double.parseDouble(dbo.get("price").toString()), Double.parseDouble(dbo.get("quantity").toString())));
+
+			ArrayList<DBObject> list = (ArrayList) product.get("ingredients");
+
+			for (DBObject dbo : list) {
+				ingredientList
+						.add(new Ingredient((String) dbo.get("name"), Double.parseDouble(dbo.get("price").toString()),
+								Double.parseDouble(dbo.get("quantity").toString())));
 			}
-			
-			productList.add(new Product(product.get("_id").toString(), (String) product.get("name"),
-					ingredientList));
+
+			productList.add(new Product(product.get("_id").toString(), (String) product.get("name"), ingredientList));
 		}
 
 		return productList;
 	}
-	
+
 	public void init() {
 		Initializer i = new Initializer(database);
 		i.initProducts();
@@ -333,7 +345,7 @@ public class Database {
 			return false;
 		}
 	}
-	
+
 	public ArrayList<Location> getAllLocations() {
 		ArrayList<Location> locList = new ArrayList<Location>();
 		DBCollection collection = database.getCollection("Location");
@@ -344,11 +356,45 @@ public class Database {
 			locList.add(new Location((String) location.get("_id"), (String) location.get("adress"),
 					(String) location.get("country")));
 		}
-		
+
 		return locList;
+
 	}
 
-	
+	public ArrayList<Order> getOrdersTimePeriod(Timestamp from, Timestamp to) {
+		ArrayList<Order> orderList = new ArrayList<Order>();
+		DBCollection collection = database.getCollection("order");
+		
+		System.out.println(from.toString());
+		
+		BasicDBObject query = new BasicDBObject("_ts",
+				new BasicDBObject("$gt", from.toString()).append("$lte", to.toString()));
+		DBCursor cursor = collection.find(query);
+		
+		System.out.println(query);
+		
+		System.out.println("XXX");
+		
+		System.out.println(cursor.one());
+
+		while (cursor.hasNext()) {
+			DBObject DBOrder = cursor.next();
+			
+			ArrayList<Product> products = new ArrayList<Product>();
+			
+			Order order = findOrder(DBOrder.get("_id").toString());
+			
+			System.out.println(order);
+			
+			orderList.add(new Order((Timestamp) DBOrder.get("dateAndTime"), (String) DBOrder.get("id"),
+					(String) DBOrder.get("employeeId"), (String) DBOrder.get("locationId"), (String) DBOrder.get("memberId"),
+					products));
+		}
+
+		return orderList;
+
+	}
+
 	public static void main(String[] args) {
 		Database db = new Database();
 		
@@ -356,11 +402,11 @@ public class Database {
 		
 //		//ADD EMPLOYEE - FUNKAR
 //		db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "loc_malmö1"));
-//		System.out.println(db.findEmployee("emp_olny95").fName);
+		System.out.println(db.findEmployee("Gustav", "von Flemming", "London").fName);
 //		
 //		//ADD MEMBER - FUNKAR
 //		db.addMember(new Member("osar93", "Oscar", "Arréhn", "Hittepågatan", "Student", "1993-02-11"));
-//		Member m = db.findMember("osar93");
+//		Member m = db.findMember("19980901");
 //		System.out.println(m.fName + ", " + m.address);
 		
 //		//Add Location - FUNKAR
@@ -380,14 +426,13 @@ public class Database {
 //		Location fl = db.findLocation("Malmö");
 //		Employee fe = db.findEmployee("emp_olny95");
 //		Member fm = db.findMember("osar93");
-//		Order o = new Order("ord_99", fe.id, fl.id, fm.id, products);
+//		Order o = new Order("ord_208", fe.id, fl.id, fm.id, products);
 //		db.createOrder(o);
 //		System.out.println(o.id);
 		
 		//Find Order - FUNKAR
 //		Order o = db.findOrder("ord_99");
 //		System.out.println(o.memID + ", " + o.price);
-		
 		
 		//Take from stock:
 //		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
@@ -407,8 +452,6 @@ public class Database {
 		//Comment - FUNKAR
 //		db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
 		
-		
 		System.out.println("X");
-
 	}
 }
