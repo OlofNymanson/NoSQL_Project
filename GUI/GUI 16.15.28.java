@@ -12,8 +12,9 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
-import controller.Controller;
 import model.Location;
+
+import controller.Controller;
 
 
 public class GUI extends JFrame{
@@ -242,6 +243,7 @@ public class GUI extends JFrame{
 		
 		addBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
+		    	Controller.addOrder(tfId.getText(), tfEmpId.getText(), tfLocId.getText(), tfMemId.getText(), products);
 		    		locationFrame.setVisible(false);
 		    		new GUI();
 		    }  
@@ -270,10 +272,9 @@ public class GUI extends JFrame{
 		locationFrame.setVisible(true);
 		locationFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
-		
-		
+	
 	private void addIngredient() {
-		final JFrame ingredientFrame = new JFrame("Add ingredient");
+		final JFrame ingredientFrame = new JFrame("Add Ingredient");
 		final ArrayList<Location> locations = Controller.getLocations();
 		String[] loco = new String[locations.size()];
 		for(int i = 0; i <= locations.size();i++) {
@@ -348,7 +349,7 @@ public class GUI extends JFrame{
 		    		JOptionPane.showMessageDialog(null, "Comment cannot be longer than 300 chars");
 		    	}
 		    	else {
-		    		Controller.addComment(tfBy.getText(), tfId.getText(), text);
+//		    		Controller.addComment(tfBy.getText(), tfId.getText(), text);
 		    		commentFrame.setVisible(false);
 		    		new GUI();
 		    	}
@@ -393,7 +394,7 @@ public class GUI extends JFrame{
 		addBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){  
 		    		System.out.println("Employer added");
-		    		Controller.addEmployer(tfFName.getText(), tfLName.getText());
+//		    		Controller.addEmployer(tfFName.getText(), tfLName.getText());
 		    		employerFrame.setVisible(false);
 		    		new GUI();
 		    }  
@@ -437,7 +438,7 @@ public class GUI extends JFrame{
 		addBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){  
 		    		System.out.println("Employee added");
-		    		Controller.addLocation(tfCountry.getText(), tfAddress.getText());
+//		    		Controller.addLocation(tfCountry.getText(), tfAddress.getText());
 		    		locationFrame.setVisible(false);
 		    		new GUI();
 		    }  
@@ -493,7 +494,7 @@ public class GUI extends JFrame{
 		
 		backBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){  
-		    	Controller.addEmployee(tfFname.getText(), tfLname.getText(), tfLocation.getText());
+//		    	Controller.addEmployee(tfFname.getText(), tfLname.getText(), tfLocation.getText());
 	    		employeeFrame.setVisible(false);
 	    		new GUI();
 	    }  
@@ -540,7 +541,7 @@ public class GUI extends JFrame{
 		addBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){  
 		    		System.out.println("Member added");
-		    		Controller.addMember(tfFname.getText(), tfLname.getText(), tfAddress.getText(), tfOccupation.getText(), tfSSN.getText());
+//		    		Controller.addMember(tfFname.getText(), tfLname.getText(), tfAddress.getText(), tfOccupation.getText(), tfSSN.getText());
 		    		memberFrame.setVisible(false);
 		    		new GUI();
 		    }  
