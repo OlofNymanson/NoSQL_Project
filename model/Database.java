@@ -3,6 +3,7 @@ package model;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -389,13 +390,28 @@ public class Database {
 		}
 
 		return orderList;
-
 	}
 
+	public int getNumberOfSpecificItems(String item, Instant from, Instant to) {
+		DBCollection collection = database.getCollection("order");
+		DBObject query = new BasicDBObject("products", new BasicDBObject("$elemMatch", new BasicDBObject("name", item)));
+		
+		DBCursor cursor = collection.find(query);
+		
+		int counter = 0;
+		
+		while(cursor.hasNext()) {
+			counter++;
+			cursor.next();
+		}
+		
+		return counter;
+	}
+	
 	public static void main(String[] args) {
 		Database db = new Database();
 		
-//		db.init(); //Kommer att dubbla alla produkter om körs flera gånger. 
+		db.init(); //Kommer att dubbla alla produkter om körs flera gånger. 
 		
 //		//ADD EMPLOYEE - FUNKAR
 //		db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "loc_malmö1"));
@@ -423,7 +439,7 @@ public class Database {
 //		Location fl = db.findLocation("Malmö");
 //		Employee fe = db.findEmployee("Gustav", "von Flemming", "London");
 //		Member fm = db.findMember("19940901");	//MUST USE SSN
-//		Order o = new Order("ord_220", fe.id, fl.id, fm.SSN, products);
+//		Order o = new Order("ord_222", fe.id, fl.id, fm.SSN, products);
 //		db.createOrder(o);
 //		System.out.println(o.id);
 		
@@ -450,12 +466,15 @@ public class Database {
 //		db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
 		
 		//Mellan tidsperioder:
-		Instant time = Instant.now();
-		Instant before = Instant.now().minusSeconds(1000000000);
+//		Instant time = Instant.now();
+//		Instant before = Instant.now().minusSeconds(86400);
+//		
+//		for(Order ord : db.getOrdersTimePeriod(before, time)) {
+//			System.out.println(ord.products);
+//		}
 		
-		for(Order ord : db.getOrdersTimePeriod(before, time)) {
-			System.out.println(ord.products);
-		}
+		//FUNKAR:
+		System.out.println(db.getNumberOfSpecificItems("coffee", Instant.now().minusSeconds(1000000), Instant.now()));
 		
 		System.out.println("X");
 	}
