@@ -26,6 +26,8 @@ public class Product {
 			System.out.println("Ingredients is null");
 		}
 		
+
+		
 		return sum;
 	}
 }

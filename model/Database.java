@@ -229,14 +229,26 @@ public class Database {
 		DBCursor cursor = collection.find(query);
 
 		ArrayList<Product> products = new ArrayList<Product>();
-		while (cursor.hasNext()) {
-			DBObject product = cursor.next();
-			products.add(new Product((String) product.get("id"), (String) product.get("name"),
-					(ArrayList<Ingredient>) product.get("ingredients")));
+		
+		DBObject order = cursor.one();
+		
+		ArrayList<DBObject> productsInOrder = (ArrayList)order.get(("products"));
+		
+		for(DBObject dbo : productsInOrder) {
+			ArrayList<DBObject> DBIngredients = (ArrayList)dbo.get("ingredients");
+			ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
+			
+			for(DBObject dbo2 : DBIngredients) {
+				ingredients.add(new Ingredient((String)dbo2.get("name"), Double.parseDouble(dbo2.get("price").toString()), Double.parseDouble(dbo2.get("quantity").toString())));
+			}
+			
+			products.add(new Product(dbo.get("_id").toString(), dbo.get("name").toString(), ingredients));
 		}
-
+		
+		
 		Order o = new Order(cursor.one().get("_id").toString(), cursor.one().get("empID").toString(),
 				cursor.one().get("locID").toString(), cursor.one().get("memID").toString(), products);
+		
 		return o;
 
 	}
@@ -279,14 +291,11 @@ public class Database {
 		collection.insert(new BasicDBObject("id", p.id).append("name", p.name).append("ingredients", p.ingredients));
 	}
 
-	//FIX
 	public ArrayList<Product> getProducts() {
 		DBCollection collection = database.getCollection("Products");
 		DBCursor cursor = collection.find();
 		ArrayList<Product> productList = new ArrayList<Product>();
 
-		
-		
 		while (cursor.hasNext()) {
 			DBObject product = cursor.next();
 			
@@ -345,25 +354,24 @@ public class Database {
 		
 //		db.init(); //Kommer att dubbla alla produkter om körs flera gånger. 
 		
-//		//ADD EMPLOYEE
+//		//ADD EMPLOYEE - FUNKAR
 //		db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "loc_malmö1"));
 //		System.out.println(db.findEmployee("emp_olny95").fName);
 //		
-//		//ADD MEMBER
+//		//ADD MEMBER - FUNKAR
 //		db.addMember(new Member("osar93", "Oscar", "Arréhn", "Hittepågatan", "Student", "1993-02-11"));
 //		Member m = db.findMember("osar93");
 //		System.out.println(m.fName + ", " + m.address);
 		
-//		//Add Location
-//		ArrayList<Ingredient> stock = new ArrayList<Ingredient>();
+//		//Add Location - FUNKAR
 //		Location l = new Location("loc_malmö2", "Storgatan 2", "Skåneland");
 //		db.addLocation(l);
 	
-//		//Find Location
-//		Location fl = db.findLocation("loc_malmö2");
-//		System.out.println(fl.id);
+//		//Find Location - FUNKAR
+//		Location fl = db.findLocation("Malmö"); //adress
+//		System.out.println(fl.country);
 
-//		//Add Order
+//		//Add Order - FUNKAR
 //		ArrayList<Product> products = new ArrayList<Product>();
 //		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
 //		ingredients.add(new Ingredient("milk", 2.5, 3));
@@ -372,17 +380,14 @@ public class Database {
 //		Location fl = db.findLocation("Malmö");
 //		Employee fe = db.findEmployee("emp_olny95");
 //		Member fm = db.findMember("osar93");
-//		Order o = new Order("ord_2", fe.id, fl.id, fm.id, products);
+//		Order o = new Order("ord_99", fe.id, fl.id, fm.id, products);
 //		db.createOrder(o);
 //		System.out.println(o.id);
 		
+		//Find Order - FUNKAR
+//		Order o = db.findOrder("ord_99");
+//		System.out.println(o.memID + ", " + o.price);
 		
-		//Find Order
-//		Order o = db.findOrder("ord_3");
-//		System.out.println(o.id);
-		
-//		Order o = db.findOrder("ord_1");
-//		System.out.println(o.id);
 		
 		//Take from stock:
 //		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
@@ -390,7 +395,6 @@ public class Database {
 //		
 //		ingredients.add(new Ingredient("Milk", 2.5, 2));
 //		ingredients.add(new Ingredient("Coffee Beans", 2.5, 2));
-//		
 //		
 //		products.add(new Product("1", "Coffee", ingredients));
 //		
@@ -400,9 +404,11 @@ public class Database {
 //			e.printStackTrace();
 //		}
 		
-		//Comment
+		//Comment - FUNKAR
 //		db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
 		
+		
 		System.out.println("X");
+
 	}
 }
