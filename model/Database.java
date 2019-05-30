@@ -279,14 +279,27 @@ public class Database {
 		collection.insert(new BasicDBObject("id", p.id).append("name", p.name).append("ingredients", p.ingredients));
 	}
 
+	//FIX
 	public ArrayList<Product> getProducts() {
 		DBCollection collection = database.getCollection("Products");
 		DBCursor cursor = collection.find();
 		ArrayList<Product> productList = new ArrayList<Product>();
+
+		
+		
 		while (cursor.hasNext()) {
 			DBObject product = cursor.next();
-			productList.add(new Product((String) product.get("_id"), (String) product.get("name"),
-					(ArrayList<Ingredient>) product.get("ingredients")));
+			
+			ArrayList<Ingredient> ingredientList = new ArrayList<Ingredient>();
+			
+			ArrayList<DBObject> list = (ArrayList)product.get("ingredients");
+			
+			for(DBObject dbo : list) {
+				ingredientList.add(new Ingredient((String)dbo.get("name"), Double.parseDouble(dbo.get("price").toString()), Double.parseDouble(dbo.get("quantity").toString())));
+			}
+			
+			productList.add(new Product(product.get("_id").toString(), (String) product.get("name"),
+					ingredientList));
 		}
 
 		return productList;
@@ -324,15 +337,14 @@ public class Database {
 		}
 		
 		return locList;
-
 	}
 
+	
 	public static void main(String[] args) {
 		Database db = new Database();
 		
 //		db.init(); //Kommer att dubbla alla produkter om körs flera gånger. 
-
-//		
+		
 //		//ADD EMPLOYEE
 //		db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "loc_malmö1"));
 //		System.out.println(db.findEmployee("emp_olny95").fName);
@@ -392,6 +404,5 @@ public class Database {
 //		db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
 		
 		System.out.println("X");
-
 	}
 }
