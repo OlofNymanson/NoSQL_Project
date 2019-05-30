@@ -1,4 +1,5 @@
 package controller;
+
 import java.util.ArrayList;
 
 import model.*;
@@ -59,8 +60,8 @@ public class Controller {
 		}
 	}
 	
-	public static String findEmployee(String fName, String lName, String locAddress) {
-		Employee emp = dbHelper.findEmployee(fName, lName, locAddress);
+	public static String findEmployee(String fName, String lName, String location) {
+		Employee emp = dbHelper.findEmployee(fName, lName, location);
 		String res = "Fname: " + emp.fName + "\nLname: " + emp.lName + "\n Location ID: " + emp.locationID;
 		return res;
 	}
@@ -79,6 +80,27 @@ public class Controller {
 	public static Member findMember(String ssn) {
 		Member member = dbHelper.findMember(ssn);
 		return member;
+	}
+	
+	public static void salesPerOccupation(String occ) {
+		
+	}
+	
+	public static void checkProdSales(ArrayList<Product> p, String sDate, String eDate) {
+		for (int i = 0; i < p.size(); i++) {
+			System.out.println("Product selected: " + p.get(i).name);
+		}
+		System.out.println(sDate + ", " + eDate);
+	}
+	
+	public static int salesPerSSN(String ssn) {
+		int sales = dbHelper.getNumberOfSalesCustomer(ssn);
+		return sales;
+	}
+	
+	public static void checkStock(Product p, String sDate, String eDate) {
+		System.out.println("Product selected: " + p.name + " Start date: " + sDate + " End date: " + eDate);
+		
 	}
 	
 }

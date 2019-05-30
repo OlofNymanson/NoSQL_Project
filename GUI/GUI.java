@@ -90,9 +90,11 @@ public class GUI extends JFrame{
 		
 		findEmployeeBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
-		    	String id = JOptionPane.showInputDialog("Enter a employee's ID");
+		    	String fName = JOptionPane.showInputDialog("Enter the employee's fname");
+		    	String lName  = JOptionPane.showInputDialog("Enter the employee's lname");
+		    	String loc  = JOptionPane.showInputDialog("Enter the employee's adress");
 		    	
-		    	String empInfo = controller.findEmployee(id);
+		    	String empInfo = controller.findEmployee(fName, lName, loc);
 		    	System.out.println("Hej");
 		    	JOptionPane.showMessageDialog(null, empInfo);
 		    }  
@@ -176,7 +178,8 @@ public class GUI extends JFrame{
 		JButton backBtn = new JButton("Back");
 		JButton salesTimeBtn = new JButton("Sales for specific time period");
 		JButton salesProdBtn = new JButton("Sales for a product over a time period");
-		JButton salesCustBtn = new JButton("Sales per customer by occupation");
+		JButton salesCustSSN = new JButton("Sales per member by SSN");
+		JButton salesCustBtn = new JButton("Sales per member by occupation");
 		JButton stockQuanBtn = new JButton("Stock quantities");
 		JButton ordersEmpBtn = new JButton("Orders by a employee over time");
 		JButton emplTimeBtn = new JButton("Employees listing over time");
@@ -187,19 +190,34 @@ public class GUI extends JFrame{
 		reportFrame.dispatchEvent(new WindowEvent(reportFrame, WindowEvent.WINDOW_CLOSING));
 		reportFrame.setLocation(dim.width/2-reportFrame.getSize().width/2, dim.height/2-reportFrame.getSize().height/2);
 		
+		backBtn.addActionListener(new ActionListener(){  
+		    public void actionPerformed(ActionEvent e){ 
+	    		reportFrame.setVisible(false);
+	    		new GUI();
+	    }  
+	    }); 
+		
+		salesCustSSN.addActionListener(new ActionListener(){  
+		    public void actionPerformed(ActionEvent e){ 
+		    		String SSN = JOptionPane.showInputDialog("Enter a member's SSN");
+		    		int sales = controller.salesPerSSN(SSN);
+		    		JOptionPane.showMessageDialog(null, "Member " + SSN + " Has done " + sales + " sales");
+	    }  
+	    }); 
+		
 		
 		
 		salesCustBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
 		    		String occupation = JOptionPane.showInputDialog("Write an occupation");
+		    		controller.salesPerOccupation(occupation);
 	    }  
 	    }); 
 		
 		stockQuanBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
-//		    		ArrayList<Product> products = controller.getProducts();
+		    	final ArrayList<Product> products = controller.getProducts();
 		    	final ArrayList<JRadioButton> buttons = new ArrayList<JRadioButton>();
-		    	final String[] products = {"Latte", "cappuccino", "Milk", "Choklad"};
 		    	ButtonGroup bg = new ButtonGroup();
 		    		final JFrame frame = new JFrame("Stock quantity time period");
 		    		JButton backBtn = new JButton("Back");
@@ -208,13 +226,13 @@ public class GUI extends JFrame{
 		    		final JTextField tfEDate = new JTextField();		    		
 		    		JLabel lblEDate = new JLabel("End date(yyyymmdd");
 		    		JButton checkBtn = new JButton("Check");
-		    		frame.setSize(400,300);
+		    		frame.setSize(700, 500);
 		    		frame.setVisible(true);
-//		    		frame.add(bg);
 		    		frame.setLayout(new GridLayout(10,2));
 		    		
-		    		for(int i = 0; i < products.length; i++) {
-		    			JRadioButton prod = new JRadioButton(products[i]);	
+		    		for(int i = 0; i < products.size(); i++) {
+		    			JRadioButton prod = new JRadioButton(products.get(i).name);
+		    			bg.add(prod);
 		    			buttons.add(prod);
 		    			frame.add(prod);
 		    		}
@@ -228,6 +246,7 @@ public class GUI extends JFrame{
 		    		backBtn.addActionListener(new ActionListener(){  
 		    		    public void actionPerformed(ActionEvent e){ 
 		    	    		frame.setVisible(false);
+		    	    		
 		    	    }  
 		    	    });  
 		    		
@@ -243,24 +262,23 @@ public class GUI extends JFrame{
 		
 		salesProdBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
-//		    		ArrayList<Product> products = controller.getProducts();
+		    	final ArrayList<Product> products = controller.getProducts();
 		    	final ArrayList<JRadioButton> buttons = new ArrayList<JRadioButton>();
-		    	final String[] products = {"Latte", "cappuccino", "Milk", "Choklad"};
-		    	ButtonGroup bg = new ButtonGroup();
+//		    	final String[] products = {"Latte", "cappuccino", "Milk", "Choklad"};
+//		    	ButtonGroup bg = new ButtonGroup();
 		    		final JFrame frame = new JFrame("Product sales time period");
 		    		JButton backBtn = new JButton("Back");
 		    		JLabel lblSDate = new JLabel("Start date(yyyymmdd");
 		    		final JTextField tfSDate = new JTextField();
 		    		final JTextField tfEDate = new JTextField();		    		
 		    		JLabel lblEDate = new JLabel("End date(yyyymmdd");
-		    		JButton checkBtn = new JButton("Check");
-		    		frame.setSize(400,300);
+		    		JButton checkBtn = new JButton("Check Product");
+		    		frame.setSize(700, 500);
 		    		frame.setVisible(true);
-//		    		frame.add(bg);
 		    		frame.setLayout(new GridLayout(10,2));
 		    		
-		    		for(int i = 0; i < products.length; i++) {
-		    			JRadioButton prod = new JRadioButton(products[i]);	
+		    		for(int i = 0; i < products.size(); i++) {
+		    			JRadioButton prod = new JRadioButton(products.get(i).name);	
 		    			buttons.add(prod);
 		    			frame.add(prod);
 		    		}
@@ -271,8 +289,8 @@ public class GUI extends JFrame{
 		    		frame.add(checkBtn);
 		    		frame.add(backBtn);
 		    		
-		    		backBtn.addActionListener(new ActionListener(){  
-		    		    public void actionPerformed(ActionEvent e){ 
+		    		backBtn.addActionListener(new ActionListener() {  
+		    		    public void actionPerformed(ActionEvent e) { 
 		    	    		frame.setVisible(false);
 		    	    }  
 		    	    });  
@@ -280,7 +298,7 @@ public class GUI extends JFrame{
 		    		checkBtn.addActionListener(new ActionListener(){  
 		    		    public void actionPerformed(ActionEvent e){ 
 		    	    		frame.setVisible(false);
-		    	    		checkProduct(products, buttons, tfSDate.getText(), tfEDate.getText());
+		    	    		checkProdSales(products, buttons, tfSDate.getText(), tfEDate.getText());
 		    	    }  
 		    	    });  
 		    		
@@ -308,6 +326,7 @@ public class GUI extends JFrame{
 		reportFrame.setLayout(new GridLayout(8,1));
 		reportFrame.add(salesTimeBtn);
 		reportFrame.add(salesProdBtn);
+		reportFrame.add(salesCustSSN);
 		reportFrame.add(salesCustBtn);
 		reportFrame.add(stockQuanBtn);
 		reportFrame.add(ordersEmpBtn);
@@ -322,15 +341,27 @@ public class GUI extends JFrame{
 		reportFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
-	private void checkStock(String[] prod, ArrayList<JRadioButton> b, String sDate, String eDate) {
-		String[] products = prod;
+	private void checkProdSales(ArrayList<Product> prod, ArrayList<JRadioButton> b, String sDate, String eDate) {
+		ArrayList<JRadioButton> buttons = b;
+		ArrayList<Product> products = new ArrayList<Product>();
+		for (int i = 0; i < buttons.size(); i++) {
+			if(buttons.get(i).isSelected()) {
+				products.add(prod.get(i));
+				
+			}
+		}
+		controller.checkProdSales(products, sDate, eDate);
+	}
+	
+	private void checkStock(ArrayList<Product> prod, ArrayList<JRadioButton> b, String sDate, String eDate) {
 		ArrayList<JRadioButton> buttons = b;
 		for (int i = 0; i < buttons.size(); i++) {
 			if(buttons.get(i).isSelected()) {
-				System.out.println("Selected: " + products[i]);
+				Product p = prod.get(i);
+				controller.checkStock(p, sDate, eDate);
+				break;
 			}
 		}
-		System.out.println("Start date: " + sDate + " End Date: " + eDate);
 	}
 	
 	private void checkProduct(String[] prod, ArrayList<JRadioButton> b, String sDate, String eDate) {
@@ -462,7 +493,7 @@ public class GUI extends JFrame{
 	
 	private void addIngredient() {
 		final JFrame ingredientFrame = new JFrame("Add Ingredient");
-		ArrayList<Location> locations = controller.getLocations();
+		final ArrayList<Location> locations = controller.getLocations();
 //		String[] loco = {locations.get(0).id};
 //		for(int i = 1; i <= locations.size();i++) {
 //			loco[i] = locations.get(i).id;
@@ -484,6 +515,7 @@ public class GUI extends JFrame{
 		addBtn.addActionListener(new ActionListener(){  
 		    public void actionPerformed(ActionEvent e){ 
 		    	//add to db
+		    		controller.addIngredient(tfName.getText(), Double.valueOf(tfPrice.getText()), Double.valueOf(tfQuan.getText()), locations.get(0));
 		    		ingredientFrame.setVisible(false);
 		    		new GUI();
 		    }  
