@@ -79,7 +79,6 @@ public class Controller {
 	
 	public static Location findLocation(String adress) {
 		Location loco = dbHelper.findLocation(adress);
-//		String res = "ID: " + loco.id + "\n Adress: " + loco.address + "\n Country: " + loco.country ;
 		return loco;
 	}
 	
@@ -93,8 +92,8 @@ public class Controller {
 		return member;
 	}
 	
-	public static void salesPerOccupation(String occ) {
-		
+	public static int salesPerOccupation(String occ, String location) {
+		return dbHelper.getNumberOfSalesOccupation(occ, location);
 	}
 	
 	public static void checkProdSales(ArrayList<Product> p, String sDate, String eDate) {
@@ -104,12 +103,17 @@ public class Controller {
 		System.out.println(sDate + ", " + eDate);
 	}
 	
-//	public static int salesPerSSN(String ssn) {
-//		int sales = dbHelper.getNumberOfSalesCustomer(ssn);
-//		return sales;
-//	}
+	public static int salesPerSSN(String ssn, String location) {
+		int sales = dbHelper.getNumberOfSalesCustomer(ssn, location);
+		return sales;
+	}
 	
 	public static void checkStock(Product p, String sDate, String eDate) {
 		System.out.println("Product selected: " + p.name + " Start date: " + sDate + " End date: " + eDate);
+	}
+	
+	public static String getItemInLocation(String item, String location) {
+		int numOfItem = dbHelper.getStockForItem(item, location);
+		return numOfItem + " " + item + " in " + location;
 	}
 }

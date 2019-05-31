@@ -80,7 +80,8 @@ public class Database {
 
 	public void addEmployer(Employer emp) {
 		DBCollection collection = database.getCollection("Employer");
-		collection.insert(new BasicDBObject("fName", emp.fName).append("lName", emp.lName).append("location", emp.location.address));
+		collection.insert(new BasicDBObject("fName", emp.fName).append("lName", emp.lName).append("location",
+				emp.location.address));
 	}
 
 	public Employer findEmployer(String location) {
@@ -88,10 +89,12 @@ public class Database {
 		DBObject query = new BasicDBObject("location", location);
 		DBCursor cursor = collection.find(query);
 
-//		Employer emp = new Employer((String) cursor.one().get("_id"), (String) cursor.one().get("fName"),
-//				(String) cursor.one().get("lName"));
-		
-		Employer emp = new Employer((String)cursor.one().get("fName"),(String) cursor.one().get("lName"), findLocation((String)cursor.one().get("location")));
+		// Employer emp = new Employer((String) cursor.one().get("_id"), (String)
+		// cursor.one().get("fName"),
+		// (String) cursor.one().get("lName"));
+
+		Employer emp = new Employer((String) cursor.one().get("fName"), (String) cursor.one().get("lName"),
+				findLocation((String) cursor.one().get("location")));
 
 		return emp;
 	}
@@ -258,7 +261,6 @@ public class Database {
 				.append("memID", o.memID).append("_ts", o.ts.toString()).append("price", o.price)
 				.append("products", products));
 		
-
 		addCoffeeCount(findMember(o.memID));
 	}
 
@@ -399,8 +401,8 @@ public class Database {
 
 		BasicDBObject query = new BasicDBObject("_ts",
 				new BasicDBObject("$gt", from.toString()).append("$lte", to.toString()));
-		
-		if(!location.equals("")) {
+
+		if (!location.equals("")) {
 			query.append("locID", location);
 		}
 
@@ -423,12 +425,10 @@ public class Database {
 		DBCollection collection = database.getCollection("order");
 		int numOfSales = 0;
 
-		BasicDBObject numQuery = new BasicDBObject("SSN", SSN);
-		if(!location.equals("")) {
+		BasicDBObject numQuery = new BasicDBObject("memID", SSN);
+		if (!location.equals("")) {
 			numQuery.append("locID", location);
-
 		}
-
 
 		DBCursor cursor = collection.find(numQuery);
 
@@ -442,37 +442,30 @@ public class Database {
 	}
 
 	public int getNumberOfSalesOccupation(String occ, String location) {
-		DBCollection collection = database.getCollection("member");
+		DBCollection collection = database.getCollection("Member");
 
 		ArrayList<String> memberID = new ArrayList<String>();
 		BasicDBObject query = new BasicDBObject();
-		if(!location.equals("")) {
-	      	 query = new BasicDBObject("locID", location);
-
-		}
 
 		DBCursor cursor = collection.find(query);
 
 		while (cursor.hasNext()) {
-
 			DBObject orders = cursor.next();
-			
-			if(orders.get("Ocupation") != null && orders.get("Ocupation").toString().equals(occ)) {
+
+			if (orders.get("occupation") != null && orders.get("occupation").toString().equals(occ)) {
 				memberID.add(orders.get("SSN").toString());
 			}
 		}
-		
+
 		BasicDBObject idQuery;
 		int numOfSales = 0;
 
 		collection = database.getCollection("order");
 		for (int i = 0; i < memberID.size(); i++) {
 			idQuery = new BasicDBObject("memID", memberID.get(i));
-			if(!location.equals("")) {
-				query.append("locID", location);
-
+			if (!location.equals("")) {
+				idQuery.append("locID", location);
 			}
-
 
 			cursor = collection.find(idQuery);
 			while (cursor.hasNext()) {
@@ -490,7 +483,7 @@ public class Database {
 		BasicDBObject query = new BasicDBObject("products",
 				new BasicDBObject("$elemMatch", new BasicDBObject("name", item)));
 
-		if(!location.equals("")) {
+		if (!location.equals("")) {
 			query.append("locID", location);
 
 		}
@@ -519,7 +512,7 @@ public class Database {
 
 			for (DBObject obj : list) {
 				if (obj.get("name").toString().equals(item)) {
-					numOfItems += Integer.parseInt(obj.get("quantity").toString());
+					numOfItems += Double.parseDouble(obj.get("quantity").toString());
 				}
 			}
 		}
@@ -527,16 +520,63 @@ public class Database {
 		return numOfItems;
 	}
 
+	public ArrayList<Order> getOrdersByEmployee(Instant from, Instant to, String location, String emp) {
+		ArrayList<Order> orders = new ArrayList<Order>();
+		DBCollection collection = database.getCollection("Location");
+
+		BasicDBObject query = new BasicDBObject("_ts",
+				new BasicDBObject("$gt", from.toString()).append("$lte", to.toString()));
+
+		query.append("locID", location);
+		query.append("empID", emp);
+
+		DBCursor cursor = collection.find(query);
+		while (cursor.hasNext()) {
+			DBObject DBOrder = cursor.next();
+
+			ArrayList<Product> products = new ArrayList<Product>();
+
+			Order order = findOrder(DBOrder.get("_id").toString());
+
+			orders.add(order);
+		}
+
+		return orders;
+
+	}
+
+	public ArrayList<String> getAllEmployees(String location) {
+		ArrayList<String> emps = new ArrayList<String>();
+		DBCollection collection = database.getCollection("Employee");
+
+		BasicDBObject query = new BasicDBObject("address", location);
+
+		DBCursor cursor = collection.find(query);
+
+		while (cursor.hasNext()) {
+			DBObject emp = cursor.next();
+			String empInfo = "";
+			empInfo += emp.get("fName").toString();
+			empInfo += " ";
+			empInfo += emp.get("lName").toString();
+			emps.add(empInfo);
+		}
+
+		return emps;
+
+	}
+	
+
+
 	public static void main(String[] args) {
 		Database db = new Database();
 
-//		db.init(); // Kommer att dubbla alla produkter om körs flera gånger.
+		// db.init(); // Kommer att dubbla alla produkter om körs flera gånger.
 
 		// //ADD EMPLOYEE - FUNKAR
-		 db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson",
-		 "PISA"));
-//		 System.out.println(db.findEmployee("Gustav", "von Flemming",
-//		 "London").fName);
+//		db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "PISA"));
+		// System.out.println(db.findEmployee("Gustav", "von Flemming",
+		// "London").fName);
 
 		// //ADD MEMBER - FUNKAR
 		// db.addMember(new Member("osar93", "Oscar", "Arréhn", "Hittepågatan",
@@ -553,17 +593,17 @@ public class Database {
 		// System.out.println(fl.country);
 
 		// Add Order - FUNKAR
-//		ArrayList<Product> products = new ArrayList<Product>();
-//		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
-//		ingredients.add(new Ingredient("milk", 2.5, 3));
-//		ingredients.add(new Ingredient("beans", 2.5, 3));
-//		products.add(new Product("p1", "coffee", ingredients));
-//		Location fl = db.findLocation("Malmö");
-//		Employee fe = db.findEmployee("Gustav", "von Flemming", "London");
-//		Member fm = db.findMember("19910109"); // MUST USE SSN
-//		Order o = new Order("ord_220", fe.id, fl.id, fm.SSN, products);
-//		db.createOrder(o);
-//		System.out.println(o.id);
+		// ArrayList<Product> products = new ArrayList<Product>();
+		// ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
+		// ingredients.add(new Ingredient("milk", 2.5, 3));
+		// ingredients.add(new Ingredient("beans", 2.5, 3));
+		// products.add(new Product("p1", "coffee", ingredients));
+		// Location fl = db.findLocation("Malmö");
+		// Employee fe = db.findEmployee("Gustav", "von Flemming", "London");
+		// Member fm = db.findMember("19910109"); // MUST USE SSN
+		// Order o = new Order("ord_220", fe.id, fl.id, fm.SSN, products);
+		// db.createOrder(o);
+		// System.out.println(o.id);
 
 		// Find Order - FUNKAR
 		// Order o = db.findOrder("ord_99");
@@ -585,7 +625,8 @@ public class Database {
 		// }
 
 		// Comment - FUNKAR
-//		 db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
+//		db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
+
 
 		// Mellan tidsperioder:
 		// Instant time = Instant.now();
@@ -595,11 +636,12 @@ public class Database {
 		// System.out.println(ord.products);
 		// }
 
-
-		//TROR FUNKAR
-//		System.out.println(db.getNumberOfSalesOccupation("DJ"));
-//		System.out.println(db.getStockForItem("Caramel", "Pisa"));
+		// TROR FUNKAR
+//		 System.out.println(db.getNumberOfSalesOccupation("Student", "Malmö"));
+//		System.out.println(db.getStockForItem("Espresso Roast", "Malmö"));
 		
+		
+
 		System.out.println("X");
 	}
 }
