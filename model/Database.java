@@ -374,12 +374,16 @@ public class Database {
 
 	}
 
-	public ArrayList<Order> getOrdersTimePeriod(Instant from, Instant to) {
+	public ArrayList<Order> getOrdersTimePeriod(Instant from, Instant to, String location) {
 		ArrayList<Order> orderList = new ArrayList<Order>();
 		DBCollection collection = database.getCollection("order");
 
 		BasicDBObject query = new BasicDBObject("_ts",
 				new BasicDBObject("$gt", from.toString()).append("$lte", to.toString()));
+		
+		if(!location.equals("")) {
+			query.append("locID", location);
+		}
 
 		DBCursor cursor = collection.find(query);
 
@@ -396,11 +400,16 @@ public class Database {
 		return orderList;
 	}
 
-	public int getNumberOfSalesCustomer(String SSN) {
+	public int getNumberOfSalesCustomer(String SSN, String location) {
 		DBCollection collection = database.getCollection("order");
 		int numOfSales = 0;
 
 		BasicDBObject numQuery = new BasicDBObject("SSN", SSN);
+		if(!location.equals("")) {
+			numQuery.append("locID", location);
+
+		}
+
 
 		DBCursor cursor = collection.find(numQuery);
 
@@ -413,15 +422,21 @@ public class Database {
 
 	}
 
-	public int getNumberOfSalesOccupation(String occ) {
+	public int getNumberOfSalesOccupation(String occ, String location) {
 		DBCollection collection = database.getCollection("member");
 		ArrayList<String> memberID = new ArrayList<String>();
-		DBCursor cursor = collection.find();
+		BasicDBObject query = new BasicDBObject();
+		if(!location.equals("")) {
+	      	 query = new BasicDBObject("locID", location);
+
+		}
+
+		DBCursor cursor = collection.find(query);
 
 		while (cursor.hasNext()) {
-			DBObject orders = cursor.next();
-			if (orders.get("Ocupation".toString()) == occ) {
-				memberID.add(orders.get("SSN").toString());
+			DBObject member = cursor.next();
+			if (member.get("Ocupation".toString()) == occ) {
+				memberID.add(member.get("SSN").toString());
 			}
 
 		}
@@ -432,6 +447,11 @@ public class Database {
 		collection = database.getCollection("orders");
 		for (int i = 0; i < memberID.size(); ++i) {
 			idQuery = new BasicDBObject("memID", memberID.get(i));
+			if(!location.equals("")) {
+				query.append("locID", location);
+
+			}
+
 			cursor = collection.find(idQuery);
 			while (cursor.hasNext()) {
 				numOfSales++;
@@ -445,10 +465,15 @@ public class Database {
 
 	}
 
-	public int getNumberOfSpecificItems(String item, Instant from, Instant to) {
+	public int getNumberOfSpecificItems(String item, Instant from, Instant to, String location) {
 		DBCollection collection = database.getCollection("order");
-		DBObject query = new BasicDBObject("products",
+		BasicDBObject query = new BasicDBObject("products",
 				new BasicDBObject("$elemMatch", new BasicDBObject("name", item)));
+
+		if(!location.equals("")) {
+			query.append("locID", location);
+
+		}
 
 		DBCursor cursor = collection.find(query);
 
@@ -466,7 +491,7 @@ public class Database {
 		DBCollection collection = database.getCollection("location");
 		int numOfItems = 0;
 
-		DBObject query = new BasicDBObject("address", location);
+		BasicDBObject query = new BasicDBObject("address", location);
 		DBCursor cursor = collection.find(query);
 
 		while (cursor.hasNext()) {
@@ -548,9 +573,7 @@ public class Database {
 		Instant time = Instant.now();
 		Instant before = Instant.now().minusSeconds(1000000000);
 
-		for (Order ord : db.getOrdersTimePeriod(before, time)) {
-			System.out.println(ord.products);
-		}
+		
 
 		System.out.println("X");
 	}
