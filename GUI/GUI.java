@@ -42,7 +42,7 @@ public class GUI extends JFrame {
 		JButton findLocationBtn = new JButton("Find location");
 		JButton findMemberBtn = new JButton("Find member");
 		JButton addIngredientBtn = new JButton("Add ingredient");
-		JButton findIngredientBtn = new JButton("Find ingredient");
+		JButton findStockBtn = new JButton("Find stock");
 		JButton commentBtn = new JButton("Make a comment");
 		JButton makeOrderBtn = new JButton("Make an order");
 		JButton makeReportBtn = new JButton("Create report");
@@ -72,9 +72,9 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				String id = JOptionPane.showInputDialog("Enter a member's SSN");
 				Member member = controller.findMember(id);
-				String res = "First Name: " + member.fName + "\n Last Name: " + member.lName + "\n ID: " + member.id
+				String res = "First Name: " + member.fName + "\n Last Name: " + member.lName 
 						+ "\n Adress: " + member.address + "\n Occupation: " + member.occupation + "\n SSN: "
-						+ member.SSN;
+						+ member.SSN + "\nCoffee Count: " + member.coffeeCount + "\n ID: " + member.id;
 				JOptionPane.showMessageDialog(null, res);
 			}
 		});
@@ -96,7 +96,7 @@ public class GUI extends JFrame {
 
 				Employee emp = controller.findEmployee(fName, lName, loc);
 				
-				String empInfo = new String("First name: " + emp.fName + "\nLast name: " + emp.lName + "\nLocation address: " + emp.locationID + "\nEmployee ID: " + emp.id);
+				String empInfo = new String("First name: " + emp.fName + "\nLast name: " + emp.lName + "\nLocation address: " + emp.locationID + "\nComment: " + emp.comment + "\nEmployee ID: " + emp.id);
 				
 				JOptionPane.showMessageDialog(null, empInfo);
 			}
@@ -112,9 +112,19 @@ public class GUI extends JFrame {
 			}
 		});
 
-		findIngredientBtn.addActionListener(new ActionListener() {
+		findStockBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String name = JOptionPane.showInputDialog("Enter a ingredient's name");
+				String location = JOptionPane.showInputDialog("Location address");
+				ArrayList<Ingredient> stock = controller.getStock(location);
+				StringBuilder sb = new StringBuilder();
+				
+				for(Ingredient i : stock) {
+					sb.append(i.name + ": " + i.quantity + "\n");
+				}
+				
+				String fullStock = location + ": \n" + sb.toString();
+				
+				JOptionPane.showMessageDialog(null, fullStock);
 			}
 		});
 
@@ -164,7 +174,7 @@ public class GUI extends JFrame {
 		frame.add(addEmployerBtn);
 		frame.add(findEmployerBtn);
 		frame.add(addIngredientBtn);
-		frame.add(findIngredientBtn);
+		frame.add(findStockBtn);
 		frame.add(commentBtn);
 		frame.add(makeReportBtn);
 		frame.setVisible(true);
@@ -587,7 +597,7 @@ public class GUI extends JFrame {
 			}
 		});
 
-		commentFrame.setLayout(new GridLayout(4, 2));
+		commentFrame.setLayout(new GridLayout(6, 2));
 		commentFrame.add(lblEmpName);
 		commentFrame.add(employeeName);
 		commentFrame.add(lblLocation);

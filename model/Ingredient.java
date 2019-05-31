@@ -2,8 +2,8 @@ package model;
 
 public class Ingredient{
 
-	String name;
-	double price, quantity;
+	public String name;
+	public double price, quantity;
 	
 	public Ingredient(String name, double price, double quantity) {
 		this.name = name;

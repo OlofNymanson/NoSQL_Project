@@ -49,6 +49,8 @@ public class Database {
 		Member m = new Member(cursor.one().get("_id").toString(), (String) cursor.one().get("fName"),
 				(String) cursor.one().get("lName"), (String) cursor.one().get("address"),
 				(String) cursor.one().get("occupation"), (String) cursor.one().get("SSN"));
+		
+		m.coffeeCount = Integer.parseInt(cursor.one().get("coffeeCount").toString());
 
 		return m;
 	}
@@ -67,6 +69,12 @@ public class Database {
 		Employee emp = new Employee(cursor.one().get("_id").toString(), (String) cursor.one().get("fName"),
 				(String) cursor.one().get("lName"), (String) cursor.one().get("location"));
 
+		try {
+			emp.comment = (String) cursor.one().get("comment");
+		}catch(Exception ex) {
+			
+		}
+		
 		return emp;
 	}
 
@@ -118,8 +126,8 @@ public class Database {
 		ArrayList<Ingredient> locationStock = getStock(l);
 
 		if (alreadyInStock(locationStock, ingredient.name)) {
-
-			locQuery = new BasicDBObject("_id", l.id).append("stock",
+			
+			locQuery = new BasicDBObject("address", l.address).append("stock",
 					new BasicDBObject("$elemMatch", new BasicDBObject("name", ingredient.name)));
 
 			double currentQuantity = 0;
@@ -227,6 +235,13 @@ public class Database {
 		DBCollection collection = database.getCollection("order");
 
 		ArrayList<DBObject> products = new ArrayList<DBObject>();
+		
+		try {
+			takeFromStock(o);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 
 		for (Product p : o.products) {
 			ArrayList<DBObject> ingredients = new ArrayList<DBObject>();
@@ -242,6 +257,7 @@ public class Database {
 		collection.insert(new BasicDBObject("empID", o.empID).append("locID", o.locID)
 				.append("memID", o.memID).append("_ts", o.ts.toString()).append("price", o.price)
 				.append("products", products));
+		
 
 		addCoffeeCount(findMember(o.memID));
 	}

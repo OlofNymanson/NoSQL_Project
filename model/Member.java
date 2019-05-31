@@ -2,6 +2,7 @@ package model;
 
 public class Member {
 	public String id, fName, lName, address, occupation, SSN;
+	public int coffeeCount = 0;
 	
 	public Member(String id, String fName, String lName, String address, String occupation, String SSN) {
 		this.id = id;

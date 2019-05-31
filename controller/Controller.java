@@ -54,6 +54,11 @@ public class Controller {
 		dbHelper.addToStock(l, i);
 	}
 	
+	public static ArrayList<Ingredient> getStock(String locationAddress) {
+		Location loc = dbHelper.findLocation(locationAddress);
+		return dbHelper.getStock(loc);
+	}
+	
 	public static void addOrder(Order o) {
 		dbHelper.createOrder(o);
 		for (int i = 0; i < o.products.size();i++) {
