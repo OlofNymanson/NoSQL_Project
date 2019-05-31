@@ -1,7 +1,7 @@
 package model;
 
 public class Employee {
-	String id;
+	public String id;
 	public String fName;
 	public String lName;
 	public String locationID;

@@ -185,6 +185,7 @@ public class Initializer {
 		collection.insert(new BasicDBObject("fName", "Max").append("lName", "Hermansson").append("location", "Amsterdam"));
 		collection.insert(new BasicDBObject("fName", "Jonatan").append("lName", "Viro").append("location", "Örebro"));
 		collection.insert(new BasicDBObject("fName", "Olof").append("lName", "Nymanson").append("location", "Pisa"));
+		collection.insert(new BasicDBObject("fName", "Jakup").append("lName", "Guven").append("location", "London"));
 		collection.insert(new BasicDBObject("fName", "Börje").append("lName", "Salming").append("location", "Stockholm"));
 		collection.insert(new BasicDBObject("fName", "Sid").append("lName", "Sidung").append("location", "Stockholm"));
 		collection.insert(new BasicDBObject("fName", "Thomas").append("lName", "Turin").append("location", "Amsterdam"));
@@ -205,6 +206,7 @@ public class Initializer {
 		collection.insert(new BasicDBObject("fName", "Börje").append("lName", "Salming").append("address", "Stockholm").append("SSN", "19950909").append("Ocupation", "Barista").append("coffeeCount", 0));
 		collection.insert(new BasicDBObject("fName", "Sid").append("lName", "Sidung").append("address", "Stockholm").append("SSN", "19920909").append("Ocupation", "Systemutvecklare").append("coffeeCount", 0));
 		collection.insert(new BasicDBObject("fName", "Thomas").append("lName", "Turin").append("address", "Amsterdam").append("SSN", "19910109").append("Ocupation", "DJ").append("coffeeCount", 0));
+		collection.insert(new BasicDBObject("fName", "Jakup").append("lName", "Guven").append("address", "London").append("SSN", "19910109").append("Ocupation", "Systemutvecklare").append("coffeeCount", 0));
 		collection.insert(new BasicDBObject("fName", "James").append("lName", "Grenblom").append("address", "London").append("SSN", "19940901").append("Ocupation", "Systemutvecklare").append("coffeeCount", 0));
 		collection.insert(new BasicDBObject("fName", "Gustav").append("lName", "von Flemming").append("address", "London").append("SSN", "19980901").append("Ocupation", "Operasångare").append("coffeeCount", 0));
 

@@ -1,4 +1,5 @@
 package controller;
+
 import java.util.ArrayList;
 
 import model.*;
@@ -24,7 +25,6 @@ public class Controller {
 	public static void addMember(String firstName, String lastName, String address, String occupation, String SSN) {
 		Member m = new Member(null, firstName, lastName, address, occupation, SSN);
 		dbHelper.addMember(m);
-		System.out.println("Member added");
 	}
 	
 	public static void addEmployee(String firstName, String lastName, String location) {
@@ -37,8 +37,9 @@ public class Controller {
 		dbHelper.addLocation(l);
 	}
 	
-	public static void addEmployer(String firstName, String lastName) {
-		Employer e = new Employer(null, firstName, lastName);
+	public static void addEmployer(String firstName, String lastName, Location location) {
+//		Employer e = new Employer(null, firstName, lastName);
+		Employer e = new Employer(firstName, lastName, location);
 		dbHelper.addEmployer(e);
 	}
 	
@@ -59,16 +60,21 @@ public class Controller {
 		}
 	}
 	
-	public static String findEmployee(String fName, String lName, String locAddress) {
-		Employee emp = dbHelper.findEmployee(fName, lName, locAddress);
-		String res = "Fname: " + emp.fName + "\nLname: " + emp.lName + "\n Location ID: " + emp.locationID;
-		return res;
+//	public static String findEmployee(String fName, String lName, String location) {
+//		Employee emp = dbHelper.findEmployee(fName, lName, location);
+//		String res = "Fname: " + emp.fName + "\nLname: " + emp.lName + "\n Location ID: " + emp.locationID;
+//		return res;
+//	}
+	
+	public static Employee findEmployee(String fName, String lName, String location) {
+		Employee emp = dbHelper.findEmployee(fName, lName, location);
+		return emp;
 	}
 	
-	public static String findLocation(String adress) {
+	public static Location findLocation(String adress) {
 		Location loco = dbHelper.findLocation(adress);
-		String res = "ID: " + loco.id + "\n Adress: " + loco.address + "\n Country: " + loco.country ;
-		return res;
+//		String res = "ID: " + loco.id + "\n Adress: " + loco.address + "\n Country: " + loco.country ;
+		return loco;
 	}
 	
 	public static Employer findEmployer(String id) {
@@ -79,6 +85,27 @@ public class Controller {
 	public static Member findMember(String ssn) {
 		Member member = dbHelper.findMember(ssn);
 		return member;
+	}
+	
+	public static void salesPerOccupation(String occ) {
+		
+	}
+	
+	public static void checkProdSales(ArrayList<Product> p, String sDate, String eDate) {
+		for (int i = 0; i < p.size(); i++) {
+			System.out.println("Product selected: " + p.get(i).name);
+		}
+		System.out.println(sDate + ", " + eDate);
+	}
+	
+	public static int salesPerSSN(String ssn) {
+		int sales = dbHelper.getNumberOfSalesCustomer(ssn);
+		return sales;
+	}
+	
+	public static void checkStock(Product p, String sDate, String eDate) {
+		System.out.println("Product selected: " + p.name + " Start date: " + sDate + " End date: " + eDate);
+		
 	}
 	
 }

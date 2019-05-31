@@ -1,13 +1,13 @@
 package model;
 
 public class Employer {
-	public String id;
 	public String fName;
 	public String lName;
+	public Location location;
 	
-	public Employer(String id, String fName, String lName) {
-		this.id = id;
+	public Employer(String fName, String lName, Location location) {
 		this.fName = fName;
 		this.lName = lName;
+		this.location = location;
 	}
 }
