@@ -25,7 +25,6 @@ public class Controller {
 	public static void addMember(String firstName, String lastName, String address, String occupation, String SSN) {
 		Member m = new Member(null, firstName, lastName, address, occupation, SSN);
 		dbHelper.addMember(m);
-		System.out.println("Member added");
 	}
 	
 	public static void addEmployee(String firstName, String lastName, String location) {
@@ -38,8 +37,9 @@ public class Controller {
 		dbHelper.addLocation(l);
 	}
 	
-	public static void addEmployer(String firstName, String lastName) {
-		Employer e = new Employer(null, firstName, lastName);
+	public static void addEmployer(String firstName, String lastName, Location location) {
+//		Employer e = new Employer(null, firstName, lastName);
+		Employer e = new Employer(firstName, lastName, location);
 		dbHelper.addEmployer(e);
 	}
 	
@@ -60,16 +60,21 @@ public class Controller {
 		}
 	}
 	
-	public static String findEmployee(String fName, String lName, String location) {
+//	public static String findEmployee(String fName, String lName, String location) {
+//		Employee emp = dbHelper.findEmployee(fName, lName, location);
+//		String res = "Fname: " + emp.fName + "\nLname: " + emp.lName + "\n Location ID: " + emp.locationID;
+//		return res;
+//	}
+	
+	public static Employee findEmployee(String fName, String lName, String location) {
 		Employee emp = dbHelper.findEmployee(fName, lName, location);
-		String res = "Fname: " + emp.fName + "\nLname: " + emp.lName + "\n Location ID: " + emp.locationID;
-		return res;
+		return emp;
 	}
 	
-	public static String findLocation(String adress) {
+	public static Location findLocation(String adress) {
 		Location loco = dbHelper.findLocation(adress);
-		String res = "ID: " + loco.id + "\n Adress: " + loco.address + "\n Country: " + loco.country ;
-		return res;
+//		String res = "ID: " + loco.id + "\n Adress: " + loco.address + "\n Country: " + loco.country ;
+		return loco;
 	}
 	
 	public static Employer findEmployer(String id) {

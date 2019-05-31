@@ -62,23 +62,25 @@ public class Database {
 		DBCursor cursor = collection.find(query);
 
 		Employee emp = new Employee(cursor.one().get("_id").toString(), (String) cursor.one().get("fName"),
-				(String) cursor.one().get("lName"), (String) cursor.one().get("locationID"));
+				(String) cursor.one().get("lName"), (String) cursor.one().get("location"));
 
 		return emp;
 	}
 
 	public void addEmployer(Employer emp) {
 		DBCollection collection = database.getCollection("Employer");
-		collection.insert(new BasicDBObject("_id", emp.id).append("fName", emp.fName).append("lName", emp.lName));
+		collection.insert(new BasicDBObject("fName", emp.fName).append("lName", emp.lName).append("location", emp.location.address));
 	}
 
-	public Employer findEmployer(String id) {
+	public Employer findEmployer(String location) {
 		DBCollection collection = database.getCollection("Employer");
-		DBObject query = new BasicDBObject("_id", id);
+		DBObject query = new BasicDBObject("location", location);
 		DBCursor cursor = collection.find(query);
 
-		Employer emp = new Employer((String) cursor.one().get("_id"), (String) cursor.one().get("fName"),
-				(String) cursor.one().get("lName"));
+//		Employer emp = new Employer((String) cursor.one().get("_id"), (String) cursor.one().get("fName"),
+//				(String) cursor.one().get("lName"));
+		
+		Employer emp = new Employer((String)cursor.one().get("fName"),(String) cursor.one().get("lName"), findLocation((String)cursor.one().get("location")));
 
 		return emp;
 	}
@@ -234,7 +236,7 @@ public class Database {
 			products.add(new BasicDBObject("_id", p.id).append("name", p.name).append("ingredients", ingredients));
 		}
 
-		collection.insert(new BasicDBObject("_id", o.id).append("empID", o.empID).append("locID", o.locID)
+		collection.insert(new BasicDBObject("empID", o.empID).append("locID", o.locID)
 				.append("memID", o.memID).append("_ts", o.ts.toString()).append("price", o.price)
 				.append("products", products));
 
@@ -485,10 +487,10 @@ public class Database {
 //		db.init(); // Kommer att dubbla alla produkter om körs flera gånger.
 
 		// //ADD EMPLOYEE - FUNKAR
-		// db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson",
-		// "loc_malmö1"));
-		// System.out.println(db.findEmployee("Gustav", "von Flemming",
-		// "London").fName);
+		 db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson",
+		 "PISA"));
+//		 System.out.println(db.findEmployee("Gustav", "von Flemming",
+//		 "London").fName);
 
 		// //ADD MEMBER - FUNKAR
 		// db.addMember(new Member("osar93", "Oscar", "Arréhn", "Hittepågatan",
@@ -537,7 +539,7 @@ public class Database {
 		// }
 
 		// Comment - FUNKAR
-		// db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
+		 db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
 
 		// Mellan tidsperioder:
 		// Instant time = Instant.now();

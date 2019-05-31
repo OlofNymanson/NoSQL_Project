@@ -17,7 +17,11 @@ public class Order {
 	
 	public Order(String id, String empID, String locID, String memID, ArrayList<Product> products) {
 		ts = Instant.now();
-		this.id = id;
+		
+		if(id != "" || id != null) {
+			this.id = id;
+		}
+		
 		this.empID = empID;
 		this.locID = locID;
 		this.memID = memID;
@@ -27,7 +31,12 @@ public class Order {
 	
 	public Order(Instant ts, String id, String empID, String locID, String memID, ArrayList<Product> products) {
 		this.ts = ts;
-		this.id = id;
+		
+		if(id != "" || id != null) {
+			this.id = id;
+		}
+		
+//		this.id = id;
 		this.empID = empID;
 		this.locID = locID;
 		this.memID = memID;

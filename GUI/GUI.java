@@ -82,7 +82,8 @@ public class GUI extends JFrame {
 		findLocationBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String adress = JOptionPane.showInputDialog("Enter a location's adress");
-				String res = controller.findLocation(adress);
+				Location loco = controller.findLocation(adress);
+				String res = "ID: " + loco.id + "\n Adress: " + loco.address + "\n Country: " + loco.country;
 				JOptionPane.showMessageDialog(null, res);
 			}
 		});
@@ -91,19 +92,21 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				String fName = JOptionPane.showInputDialog("Enter the employee's fname");
 				String lName = JOptionPane.showInputDialog("Enter the employee's lname");
-				String loc = JOptionPane.showInputDialog("Enter the employee's adress");
+				String loc = JOptionPane.showInputDialog("Enter the location of shop");
 
-				String empInfo = controller.findEmployee(fName, lName, loc);
-				System.out.println("Hej");
+				Employee emp = controller.findEmployee(fName, lName, loc);
+				
+				String empInfo = new String("First name: " + emp.fName + "\nLast name: " + emp.lName + "\nLocation address: " + emp.locationID + "\nEmployee ID: " + emp.id);
+				
 				JOptionPane.showMessageDialog(null, empInfo);
 			}
 		});
 
 		findEmployerBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String id = JOptionPane.showInputDialog("Enter a employer's ID");
-				Employer emp = controller.findEmployer(id);
-				String res = "Employer ID: " + emp.id + "\n First Name: " + emp.fName + "\n Last Name:" + emp.lName;
+				String location = JOptionPane.showInputDialog("Enter a employer's location");
+				Employer emp = controller.findEmployer(location);
+				String res = "\n First Name: " + emp.fName + "\n Last Name:" + emp.lName + "\nLocation: " + emp.location.address;
 				JOptionPane.showMessageDialog(null, res);
 
 			}
@@ -377,10 +380,10 @@ public class GUI extends JFrame {
 		final Frame oFrame = new Frame("Order");
 		oFrame.setVisible(false);
 		JButton backBtn = new JButton("Back");
-		JLabel lblId = new JLabel("Order ID:");
-		JLabel lblEmpId = new JLabel("Employee ID:");
-		JLabel lblLocId = new JLabel("Location ID:");
-		JLabel lblMemId = new JLabel("Member ID");
+//		JLabel lblId = new JLabel("Order ID:");
+		JLabel lblEmpId = new JLabel("Employee Full Name:");
+		JLabel lblLocId = new JLabel("Location Address:");
+		JLabel lblMemId = new JLabel("Member SSN");
 		JButton oBack = new JButton("Done");
 		JButton addProdBtn = new JButton("Add products");
 		String[] names = new String[100];
@@ -392,7 +395,6 @@ public class GUI extends JFrame {
 		}
 		final JComboBox cbProducts = new JComboBox(names);
 		final JTextArea taProducts = new JTextArea("Products: \n");
-		final JTextField tfId = new JTextField();
 		final JTextField tfEmpId = new JTextField();
 		final JTextField tfLocId = new JTextField();
 		final JTextField tfMemId = new JTextField();
@@ -404,13 +406,6 @@ public class GUI extends JFrame {
 		oFrame.add(taProducts);
 		oFrame.add(oBack, BorderLayout.SOUTH);
 		oFrame.add(cbProducts, BorderLayout.NORTH);
-
-		// cbProducts.addMouseListener(new MouseAdapter() {
-		// @Override
-		// public void mouseClicked(MouseEvent e) {
-		// System.out.println(cbProducts.getSelectedItem());
-		// }
-		// });
 
 		addProdBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -428,9 +423,7 @@ public class GUI extends JFrame {
 		cbProducts.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				JComboBox comboBox = (JComboBox) event.getSource();
-				// Object selected = comboBox.getSelectedItem().toString();
 
-				// taProducts.append(selected + "\n");
 				for (int i = 0; i < products.size(); i++) {
 					String selected = comboBox.getSelectedItem().toString();
 					if (selected.equals(products.get(i).name)) {
@@ -438,7 +431,6 @@ public class GUI extends JFrame {
 						taProducts.append(selected + "\n");
 					}
 				}
-				// orderedProducts.add((Product) selected);
 
 			}
 		});
@@ -452,11 +444,16 @@ public class GUI extends JFrame {
 				for (int i = 0; i < orderedProducts.size(); i++) {
 					System.out.println(orderedProducts.get(i).name);
 				}
-				Order order = new Order(tfId.getText(), tfEmpId.getText(), tfLocId.getText(), tfMemId.getText(),
+				
+				String[] fullName = tfEmpId.getText().split(" ");
+				
+				Employee emp = controller.findEmployee(fullName[0], fullName[1], tfLocId.getText());
+				
+				Order order = new Order(null, emp.id, tfLocId.getText(), tfMemId.getText(),
 						orderedProducts);
+				
 				controller.addOrder(order);
-				// controller.addOrder( tfId.getText(), tfEmpId.getText(), tfLocId.getText(),
-				// tfMemId.getText(), orderedProducts);
+
 			}
 		});
 
@@ -468,8 +465,8 @@ public class GUI extends JFrame {
 		});
 
 		orderFrame.setLayout(new GridLayout(8, 2));
-		orderFrame.add(lblId);
-		orderFrame.add(tfId);
+//		orderFrame.add(lblId);
+//		orderFrame.add(tfId);
 		orderFrame.add(lblEmpId);
 		orderFrame.add(tfEmpId);
 		orderFrame.add(lblLocId);
@@ -597,17 +594,18 @@ public class GUI extends JFrame {
 		JButton backBtn = new JButton("Back");
 		JLabel lblFName = new JLabel("First Name:");
 		JLabel lblLName = new JLabel("Last Name:");
-		// JLabel lblId = new JLabel("Employer ID:");
+		 JLabel lblLocation = new JLabel("Employer Location:");
 		final JTextField tfFName = new JTextField();
 		final JTextField tfLName = new JTextField();
-		// final JTextField tfId = new JTextField();
+		 final JTextField tfLocation = new JTextField();
 		employerFrame.dispatchEvent(new WindowEvent(employerFrame, WindowEvent.WINDOW_CLOSING));
 		employerFrame.setLocation(dim.width / 2 - employerFrame.getSize().width / 2,
 				dim.height / 2 - employerFrame.getSize().height / 2);
 
 		addBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Controller.addEmployer(tfFName.getText(), tfLName.getText());
+//				Controller.addEmployer(tfFName.getText(), tfLName.getText());
+				controller.addEmployer(tfFName.getText(), tfLName.getText(), Controller.findLocation(tfLocation.getText()));
 				employerFrame.setVisible(false);
 				new GUI();
 			}
@@ -625,8 +623,8 @@ public class GUI extends JFrame {
 		employerFrame.add(tfFName);
 		employerFrame.add(lblLName);
 		employerFrame.add(tfLName);
-		// employerFrame.add(lblId);
-		// employerFrame.add(tfId);
+		 employerFrame.add(lblLocation);
+		 employerFrame.add(tfLocation);
 		employerFrame.add(addBtn);
 		employerFrame.add(backBtn);
 
@@ -641,10 +639,8 @@ public class GUI extends JFrame {
 		JButton backBtn = new JButton("Back");
 		JLabel lblCountry = new JLabel("Country:");
 		JLabel lblAddress = new JLabel("Address:");
-		JLabel lblId = new JLabel("Location ID:");
 		final JTextField tfCountry = new JTextField();
 		final JTextField tfAddress = new JTextField();
-		final JTextField tfId = new JTextField();
 		locationFrame.dispatchEvent(new WindowEvent(locationFrame, WindowEvent.WINDOW_CLOSING));
 		locationFrame.setLocation(dim.width / 2 - locationFrame.getSize().width / 2,
 				dim.height / 2 - locationFrame.getSize().height / 2);
@@ -664,13 +660,11 @@ public class GUI extends JFrame {
 			}
 		});
 
-		locationFrame.setLayout(new GridLayout(6, 2));
+		locationFrame.setLayout(new GridLayout(4, 2));
 		locationFrame.add(lblCountry);
 		locationFrame.add(tfCountry);
 		locationFrame.add(lblAddress);
 		locationFrame.add(tfAddress);
-		locationFrame.add(lblId);
-		locationFrame.add(tfId);
 		locationFrame.add(addBtn);
 		locationFrame.add(backBtn);
 
@@ -685,11 +679,9 @@ public class GUI extends JFrame {
 		JButton addBtn = new JButton("Add employee");
 		JLabel lblFName = new JLabel("First Name:");
 		JLabel lblLName = new JLabel("Last Name:");
-		JLabel lblId = new JLabel("Employee ID:");
-		JLabel lblLocation = new JLabel("Location ID:");
+		JLabel lblLocation = new JLabel("Location Address:");
 		final JTextField tfFname = new JTextField();
 		final JTextField tfLname = new JTextField();
-		final JTextField tfId = new JTextField();
 		final JTextField tfLocation = new JTextField();
 		employeeFrame.dispatchEvent(new WindowEvent(employeeFrame, WindowEvent.WINDOW_CLOSING));
 		employeeFrame.setLocation(dim.width / 2 - employeeFrame.getSize().width / 2,
@@ -698,7 +690,6 @@ public class GUI extends JFrame {
 		addBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				controller.addEmployee(tfFname.getText(), tfLname.getText(), tfLocation.getText());
-				System.out.println("Employee added");
 				employeeFrame.setVisible(false);
 				new GUI();
 			}
@@ -706,8 +697,6 @@ public class GUI extends JFrame {
 
 		backBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Controller.addEmployee(tfFname.getText(), tfLname.getText(),
-				// tfLocation.getText());
 				employeeFrame.setVisible(false);
 				new GUI();
 			}
@@ -718,8 +707,6 @@ public class GUI extends JFrame {
 		employeeFrame.add(tfFname);
 		employeeFrame.add(lblLName);
 		employeeFrame.add(tfLname);
-		employeeFrame.add(lblId);
-		employeeFrame.add(tfId);
 		employeeFrame.add(lblLocation);
 		employeeFrame.add(tfLocation);
 		employeeFrame.add(addBtn);
@@ -736,13 +723,11 @@ public class GUI extends JFrame {
 		JButton backBtn = new JButton("Back");
 		JLabel lblFName = new JLabel("First Name:");
 		JLabel lblLName = new JLabel("Last Name:");
-		JLabel lblId = new JLabel("ID:");
 		JLabel lblAddress = new JLabel("Address:");
 		JLabel lblOccupation = new JLabel("Occupation:");
 		JLabel lblSSN = new JLabel("SSN:");
 		final JTextField tfFname = new JTextField();
 		final JTextField tfLname = new JTextField();
-		final JTextField tfId = new JTextField();
 		final JTextField tfAddress = new JTextField();
 		final JTextField tfOccupation = new JTextField();
 		final JTextField tfSSN = new JTextField();
@@ -772,8 +757,6 @@ public class GUI extends JFrame {
 		memberFrame.add(tfFname);
 		memberFrame.add(lblLName);
 		memberFrame.add(tfLname);
-		memberFrame.add(lblId);
-		memberFrame.add(tfId);
 		memberFrame.add(lblAddress);
 		memberFrame.add(tfAddress);
 		memberFrame.add(lblOccupation);
