@@ -545,10 +545,12 @@ public class GUI extends JFrame {
 		final JFrame commentFrame = new JFrame("Make Comment");
 		JButton addBtn = new JButton("Add Comment");
 		JButton backBtn = new JButton("Back");
-		JLabel lblId = new JLabel("Employee id:");
+		JLabel lblEmpName = new JLabel("Employee full name: ");
 		JLabel lblEmployer = new JLabel("Comment by:");
-		final JTextField tfId = new JTextField();
+		JLabel lblLocation = new JLabel("Shop location");
+		final JTextField employeeName = new JTextField();
 		final JTextField tfBy = new JTextField();
+		final JTextField tfLocation = new JTextField();
 		final JTextArea comment = new JTextArea("Comment here");
 		commentFrame.dispatchEvent(new WindowEvent(commentFrame, WindowEvent.WINDOW_CLOSING));
 		commentFrame.setLocation(dim.width / 2 - commentFrame.getSize().width / 2,
@@ -560,7 +562,10 @@ public class GUI extends JFrame {
 				if (text.length() > 300) {
 					JOptionPane.showMessageDialog(null, "Comment cannot be longer than 300 chars");
 				} else {
-					Controller.addComment(tfBy.getText(), tfId.getText(), text);
+					String[] fullName = employeeName.getText().split(" ");
+					
+					controller.addComment(tfBy.getText(), fullName[0], fullName[1], tfLocation.getText(), comment.getText());
+					
 					commentFrame.setVisible(false);
 					new GUI();
 				}
@@ -575,8 +580,10 @@ public class GUI extends JFrame {
 		});
 
 		commentFrame.setLayout(new GridLayout(4, 2));
-		commentFrame.add(lblId);
-		commentFrame.add(tfId);
+		commentFrame.add(lblEmpName);
+		commentFrame.add(employeeName);
+		commentFrame.add(lblLocation);
+		commentFrame.add(tfLocation);
 		commentFrame.add(lblEmployer);
 		commentFrame.add(tfBy);
 		commentFrame.add(comment);

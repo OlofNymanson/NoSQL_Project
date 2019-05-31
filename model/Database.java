@@ -9,6 +9,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Filter;
+
+import org.bson.types.ObjectId;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -306,7 +309,7 @@ public class Database {
 
 	public void addComment(Comment c) {
 		DBCollection collection = database.getCollection("Employee");
-		DBObject query = new BasicDBObject("_id", c.employeeID);
+		DBObject query = new BasicDBObject("_id", new ObjectId(c.employeeID));
 		DBObject update = new BasicDBObject("$set", new BasicDBObject("comment", c.comment));
 		collection.findAndModify(query, update);
 	}
