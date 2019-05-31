@@ -99,14 +99,12 @@ public class Controller {
 		System.out.println(sDate + ", " + eDate);
 	}
 	
-	public static int salesPerSSN(String ssn) {
-		int sales = dbHelper.getNumberOfSalesCustomer(ssn);
-		return sales;
-	}
+//	public static int salesPerSSN(String ssn) {
+//		int sales = dbHelper.getNumberOfSalesCustomer(ssn);
+//		return sales;
+//	}
 	
 	public static void checkStock(Product p, String sDate, String eDate) {
 		System.out.println("Product selected: " + p.name + " Start date: " + sDate + " End date: " + eDate);
-		
 	}
-	
 }
