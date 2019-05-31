@@ -202,8 +202,8 @@ public class GUI extends JFrame {
 		salesCustSSN.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String SSN = JOptionPane.showInputDialog("Enter a member's SSN");
-				int sales = controller.salesPerSSN(SSN);
-				JOptionPane.showMessageDialog(null, "Member " + SSN + " Has done " + sales + " sales");
+//				int sales = controller.salesPerSSN(SSN);
+//				JOptionPane.showMessageDialog(null, "Member " + SSN + " Has done " + sales + " sales");
 			}
 		});
 
@@ -484,71 +484,81 @@ public class GUI extends JFrame {
 		orderFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 
-	private void addIngredient() {
-		final JFrame ingredientFrame = new JFrame("Add Ingredient");
-		final ArrayList<Location> locations = controller.getLocations();
-		// String[] loco = {locations.get(0).id};
-		// for(int i = 1; i <= locations.size();i++) {
-		// loco[i] = locations.get(i).id;
-		// }
+	private void addIngredient() {final JFrame ingredientFrame = new JFrame("Add Ingredient");
+	final ArrayList<Location> locations = controller.getLocations();
+	 String[] loco = new String[locations.size()];
+	 for(int i = 0; i < locations.size();i++) {
+	 loco[i] = locations.get(i).address;
+	 System.out.println(locations.get(i).address);
+//	 System.out.println(locations.get(i).country);
+	 }
 
-		JComboBox cbLocation = new JComboBox();
-		JButton addBtn = new JButton("Add Ingredient");
-		JButton backBtn = new JButton("Back");
-		JLabel lblName = new JLabel("Ingredient name:");
-		JLabel lblPrice = new JLabel("Price:");
-		JLabel lblQuantity = new JLabel("Quantity:");
-		JLabel lblLocations = new JLabel("Locations");
-		final JTextField tfName = new JTextField();
-		final JTextField tfPrice = new JTextField();
-		final JTextField tfQuan = new JTextField();
-		ingredientFrame.dispatchEvent(new WindowEvent(ingredientFrame, WindowEvent.WINDOW_CLOSING));
-		ingredientFrame.setLocation(dim.width / 2 - ingredientFrame.getSize().width / 2,
-				dim.height / 2 - ingredientFrame.getSize().height / 2);
+	final JComboBox cbLocation = new JComboBox(loco);
+	JButton addBtn = new JButton("Add Ingredient");
+	JButton backBtn = new JButton("Back");
+	JLabel lblName = new JLabel("Ingredient name:");
+	JLabel lblPrice = new JLabel("Price:");
+	JLabel lblQuantity = new JLabel("Quantity:");
+	JLabel lblLocations = new JLabel("Location");
+	final JTextField tfName = new JTextField();
+	final JTextField tfPrice = new JTextField();
+	final JTextField tfQuan = new JTextField();
+	ingredientFrame.dispatchEvent(new WindowEvent(ingredientFrame, WindowEvent.WINDOW_CLOSING));
+	ingredientFrame.setLocation(dim.width / 2 - ingredientFrame.getSize().width / 2,
+			dim.height / 2 - ingredientFrame.getSize().height / 2);
 
-		addBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// add to db
-				controller.addIngredient(tfName.getText(), Double.valueOf(tfPrice.getText()),
-						Double.valueOf(tfQuan.getText()), locations.get(0));
-				ingredientFrame.setVisible(false);
-				new GUI();
+	addBtn.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			String country = cbLocation.getSelectedItem().toString();
+			Location location = new Location("","","");
+			for(int i = 0; i < locations.size(); i++) {
+				if(country == locations.get(i).address) {
+					location = locations.get(i);
+				}
 			}
-		});
+			// add to db
+			controller.addIngredient(tfName.getText(), Double.valueOf(tfPrice.getText()),
+					Double.valueOf(tfQuan.getText()), location);
+			ingredientFrame.setVisible(false);
+			new GUI();
+		}
+	});
 
-		backBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ingredientFrame.setVisible(false);
-				new GUI();
-			}
-		});
+	backBtn.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			ingredientFrame.setVisible(false);
+			new GUI();
+		}
+	});
 
-		ingredientFrame.setLayout(new GridLayout(6, 2));
-		ingredientFrame.add(lblName);
-		ingredientFrame.add(tfName);
-		ingredientFrame.add(lblPrice);
-		ingredientFrame.add(tfPrice);
-		ingredientFrame.add(lblQuantity);
-		ingredientFrame.add(tfQuan);
-		ingredientFrame.add(lblLocations);
-		ingredientFrame.add(cbLocation);
+	ingredientFrame.setLayout(new GridLayout(6, 2));
+	ingredientFrame.add(lblName);
+	ingredientFrame.add(tfName);
+	ingredientFrame.add(lblPrice);
+	ingredientFrame.add(tfPrice);
+	ingredientFrame.add(lblQuantity);
+	ingredientFrame.add(tfQuan);
+	ingredientFrame.add(lblLocations);
+	ingredientFrame.add(cbLocation);
 
-		ingredientFrame.add(addBtn);
-		ingredientFrame.add(backBtn);
+	ingredientFrame.add(addBtn);
+	ingredientFrame.add(backBtn);
 
-		ingredientFrame.setSize(400, 300);
-		ingredientFrame.setVisible(true);
-		ingredientFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-	}
+	ingredientFrame.setSize(400, 300);
+	ingredientFrame.setVisible(true);
+	ingredientFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+}
 
 	private void makeComment() {
 		final JFrame commentFrame = new JFrame("Make Comment");
 		JButton addBtn = new JButton("Add Comment");
 		JButton backBtn = new JButton("Back");
-		JLabel lblId = new JLabel("Employee id:");
+		JLabel lblEmpName = new JLabel("Employee full name: ");
 		JLabel lblEmployer = new JLabel("Comment by:");
-		final JTextField tfId = new JTextField();
+		JLabel lblLocation = new JLabel("Shop location");
+		final JTextField employeeName = new JTextField();
 		final JTextField tfBy = new JTextField();
+		final JTextField tfLocation = new JTextField();
 		final JTextArea comment = new JTextArea("Comment here");
 		commentFrame.dispatchEvent(new WindowEvent(commentFrame, WindowEvent.WINDOW_CLOSING));
 		commentFrame.setLocation(dim.width / 2 - commentFrame.getSize().width / 2,
@@ -560,7 +570,10 @@ public class GUI extends JFrame {
 				if (text.length() > 300) {
 					JOptionPane.showMessageDialog(null, "Comment cannot be longer than 300 chars");
 				} else {
-					Controller.addComment(tfBy.getText(), tfId.getText(), text);
+					String[] fullName = employeeName.getText().split(" ");
+					
+					controller.addComment(tfBy.getText(), fullName[0], fullName[1], tfLocation.getText(), comment.getText());
+					
 					commentFrame.setVisible(false);
 					new GUI();
 				}
@@ -575,8 +588,10 @@ public class GUI extends JFrame {
 		});
 
 		commentFrame.setLayout(new GridLayout(4, 2));
-		commentFrame.add(lblId);
-		commentFrame.add(tfId);
+		commentFrame.add(lblEmpName);
+		commentFrame.add(employeeName);
+		commentFrame.add(lblLocation);
+		commentFrame.add(tfLocation);
 		commentFrame.add(lblEmployer);
 		commentFrame.add(tfBy);
 		commentFrame.add(comment);

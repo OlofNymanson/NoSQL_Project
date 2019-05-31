@@ -9,6 +9,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Filter;
+
+import org.bson.types.ObjectId;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -137,7 +140,7 @@ public class Database {
 																									// quantity and add
 
 		} else {
-			locQuery = new BasicDBObject("_id", l);
+			locQuery = new BasicDBObject("address", l.address);
 			update = new BasicDBObject("$push", new BasicDBObject("stock", new BasicDBObject("name", ingredient.name)
 					.append("price", ingredient.price).append("quantity", ingredient.quantity)));
 		}
@@ -308,7 +311,7 @@ public class Database {
 
 	public void addComment(Comment c) {
 		DBCollection collection = database.getCollection("Employee");
-		DBObject query = new BasicDBObject("_id", c.employeeID);
+		DBObject query = new BasicDBObject("_id", new ObjectId(c.employeeID));
 		DBObject update = new BasicDBObject("$set", new BasicDBObject("comment", c.comment));
 		collection.findAndModify(query, update);
 	}
@@ -369,8 +372,8 @@ public class Database {
 
 		while (cursor.hasNext()) {
 			DBObject location = cursor.next();
-			locList.add(new Location((String) location.get("_id"), (String) location.get("adress"),
-					(String) location.get("country")));
+			locList.add(new Location(location.get("_id").toString(), (String) location.get("country"),
+					(String) location.get("address")));
 		}
 
 		return locList;
@@ -614,6 +617,7 @@ public class Database {
 
 		// Comment - FUNKAR
 		db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
+
 
 		// Mellan tidsperioder:
 		// Instant time = Instant.now();

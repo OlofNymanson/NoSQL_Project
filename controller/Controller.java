@@ -8,10 +8,6 @@ import model.*;
 public class Controller {
 	public static Database dbHelper = new Database();
 	
-	public static void main(String[] args) {
-		
-	}
-	
 	public static ArrayList<Product> getProducts() {
 		ArrayList<Product> products = dbHelper.getProducts();
 		return products;
@@ -43,8 +39,13 @@ public class Controller {
 		dbHelper.addEmployer(e);
 	}
 	
-	public static void addComment(String employer, String employee, String comment) {
-		Comment c = new Comment(employer, employee, comment);
+	public static void addComment(String employer, String employeeFName, String employeeLName, String location, String comment) {
+		Employee employee = dbHelper.findEmployee(employeeFName, employeeLName, location);
+		
+		System.out.println(employee.fName + " " + employee.id);
+		
+		Comment c = new Comment(employer, employee.id, comment);
+		
 		dbHelper.addComment(c);
 	}
 	
@@ -98,14 +99,12 @@ public class Controller {
 		System.out.println(sDate + ", " + eDate);
 	}
 	
-	public static int salesPerSSN(String ssn) {
-		int sales = dbHelper.getNumberOfSalesCustomer(ssn);
-		return sales;
-	}
+//	public static int salesPerSSN(String ssn) {
+//		int sales = dbHelper.getNumberOfSalesCustomer(ssn);
+//		return sales;
+//	}
 	
 	public static void checkStock(Product p, String sDate, String eDate) {
 		System.out.println("Product selected: " + p.name + " Start date: " + sDate + " End date: " + eDate);
-		
 	}
-	
 }
