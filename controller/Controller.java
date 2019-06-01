@@ -97,11 +97,8 @@ public class Controller {
 		return dbHelper.getNumberOfSalesOccupation(occ, location);
 	}
 	
-	public static void checkProdSales(ArrayList<Product> p, String sDate, String eDate) {
-		for (int i = 0; i < p.size(); i++) {
-			System.out.println("Product selected: " + p.get(i).name);
-		}
-		System.out.println(sDate + ", " + eDate);
+	public static int checkProdSales(String product, String location, String timeFrom, String timeTo) {
+		return dbHelper.getNumberOfSpecificItemsSold(product, Instant.parse(timeFrom + "T00:00:00.000Z"), Instant.parse(timeTo + "T00:00:00.000Z"), location);
 	}
 	
 	public static int salesPerSSN(String ssn, String location) {
@@ -123,6 +120,12 @@ public class Controller {
 	}
 	
 	public static ArrayList<Order> getOrdersByEmployeeOverTime(String employeeID, String location, String timeFrom, String timeTo){
+		System.out.println("X");
+		
 		return dbHelper.getOrdersByEmployee(Instant.parse(timeFrom + "T00:00:00.000Z"), Instant.parse(timeTo + "T00:00:00.000Z"), location, employeeID);
+	}
+	
+	public static ArrayList<Order> getOrdersTimePeriod(String timeFrom, String timeTo, String location){
+		return dbHelper.getOrdersTimePeriod(Instant.parse(timeFrom + "T00:00:00.000Z"), Instant.parse(timeTo + "T00:00:00.000Z"), location);
 	}
 }

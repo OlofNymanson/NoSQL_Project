@@ -241,46 +241,12 @@ public class GUI extends JFrame {
 
 		salesProdBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				final ArrayList<Product> products = controller.getProducts();
-				final ArrayList<JRadioButton> buttons = new ArrayList<JRadioButton>();
-				// final String[] products = {"Latte", "cappuccino", "Milk", "Choklad"};
-				// ButtonGroup bg = new ButtonGroup();
-				final JFrame frame = new JFrame("Product sales time period");
-				JButton backBtn = new JButton("Back");
-				JLabel lblSDate = new JLabel("Start date(yyyymmdd");
-				final JTextField tfSDate = new JTextField();
-				final JTextField tfEDate = new JTextField();
-				JLabel lblEDate = new JLabel("End date(yyyymmdd");
-				JButton checkBtn = new JButton("Check Product");
-				frame.setSize(700, 500);
-				frame.setVisible(true);
-				frame.setLayout(new GridLayout(10, 2));
-
-				for (int i = 0; i < products.size(); i++) {
-					JRadioButton prod = new JRadioButton(products.get(i).name);
-					buttons.add(prod);
-					frame.add(prod);
-				}
-				frame.add(lblSDate);
-				frame.add(tfSDate);
-				frame.add(lblEDate);
-				frame.add(tfEDate);
-				frame.add(checkBtn);
-				frame.add(backBtn);
-
-				backBtn.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						frame.setVisible(false);
-					}
-				});
-
-				checkBtn.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						frame.setVisible(false);
-						checkProdSales(products, buttons, tfSDate.getText(), tfEDate.getText());
-					}
-				});
-
+				String product = JOptionPane.showInputDialog("Product");
+				String location = JOptionPane.showInputDialog("Enter Location (optional)");
+				String strFrom = JOptionPane.showInputDialog("Date from (YYYY-MM-DD)");
+				String strTo = JOptionPane.showInputDialog("Date to (YYYY-MM-DD)");
+				String message = product + " has been sold " + controller.checkProdSales(product, location, strFrom, strTo) + " times between during the time period";
+				JOptionPane.showMessageDialog(null, message);
 			}
 		});
 
@@ -306,12 +272,20 @@ public class GUI extends JFrame {
 
 		salesTimeBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String startDate = JOptionPane.showInputDialog("Enter start date (YYYYMMDD)");
-				int startYear = Integer.valueOf(startDate.substring(0, 4));
-				int startYonth = Integer.valueOf(startDate.substring(4, 6));
-				int startDay = Integer.valueOf(startDate.substring(6, 8));
-				String endDate = JOptionPane.showInputDialog("Enter end date (YYYMMDD)");
-
+				String strFrom = JOptionPane.showInputDialog("Date from (YYYY-MM-DD)");
+				String strTo = JOptionPane.showInputDialog("Date to (YYYY-MM-DD)");
+				String location = JOptionPane.showInputDialog("Location");
+				
+				ArrayList<Order> orders = controller.getOrdersTimePeriod(strFrom, strTo, location);
+				
+				StringBuilder sb = new StringBuilder();
+				sb.append("Orders:\n");
+				
+				for(Order o : orders) {
+					sb.append("Order at " + o.locID + ", Cost: " + o.price + "\n");
+				}
+				
+				JOptionPane.showMessageDialog(null, sb.toString());
 			}
 		});
 
@@ -352,17 +326,17 @@ public class GUI extends JFrame {
 		reportFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 
-	private void checkProdSales(ArrayList<Product> prod, ArrayList<JRadioButton> b, String sDate, String eDate) {
-		ArrayList<JRadioButton> buttons = b;
-		ArrayList<Product> products = new ArrayList<Product>();
-		for (int i = 0; i < buttons.size(); i++) {
-			if (buttons.get(i).isSelected()) {
-				products.add(prod.get(i));
-
-			}
-		}
-		controller.checkProdSales(products, sDate, eDate);
-	}
+//	private void checkProdSales(ArrayList<Product> prod, ArrayList<JRadioButton> b, String sDate, String eDate) {
+//		ArrayList<JRadioButton> buttons = b;
+//		ArrayList<Product> products = new ArrayList<Product>();
+//		for (int i = 0; i < buttons.size(); i++) {
+//			if (buttons.get(i).isSelected()) {
+//				products.add(prod.get(i));
+//
+//			}
+//		}
+//		controller.checkProdSales(products, sDate, eDate);
+//	}
 
 	// private String checkStock(ArrayList<Product> prod, ArrayList<JRadioButton> b,
 	// String location) {

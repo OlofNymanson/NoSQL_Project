@@ -214,8 +214,6 @@ public class Database {
 	}
 
 	private boolean enoughIngredientsInStock(Order order) {
-		System.out.println(order.locID);
-
 		ArrayList<Ingredient> locationStock = getStock(findLocation(order.locID));
 
 		// förlåt
@@ -264,15 +262,12 @@ public class Database {
 
 	public static Order findOrder(String id) {
 		DBCollection collection = database.getCollection("order");
-		// DBObject query = new BasicDBObject("_id", id);
 		DBObject query = new BasicDBObject("_id", new ObjectId(id));
 		DBCursor cursor = collection.find(query);
 
 		ArrayList<Product> products = new ArrayList<Product>();
 
 		DBObject order = cursor.one();
-
-		System.out.println(order);
 
 		ArrayList<DBObject> productsInOrder = (ArrayList) order.get(("products"));
 
@@ -479,7 +474,7 @@ public class Database {
 
 	}
 
-	public int getNumberOfSpecificItems(String item, Instant from, Instant to, String location) {
+	public int getNumberOfSpecificItemsSold(String item, Instant from, Instant to, String location) {
 		DBCollection collection = database.getCollection("order");
 		BasicDBObject query = new BasicDBObject("products",
 				new BasicDBObject("$elemMatch", new BasicDBObject("name", item)));
@@ -531,7 +526,7 @@ public class Database {
 		query.append("empID", emp);
 
 		DBCursor cursor = collection.find(query);
-
+		
 		while (cursor.hasNext()) {
 			DBObject DBOrder = cursor.next();
 			Order order = findOrder(DBOrder.get("_id").toString());
@@ -619,17 +614,9 @@ public class Database {
 		// Comment - FUNKAR
 		// db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
 
-		// Mellan tidsperioder:
-		// Instant time = Instant.now();
-		// Instant before = Instant.now().minusSeconds(86400);
-		//
-		// for(Order ord : db.getOrdersTimePeriod(before, time)) {
-		// System.out.println(ord.products);
-		// }
-
-		// KOLLA:
-		// getNumbersOfSpecificItem
-
-		System.out.println("X");
+//		 Mellan tidsperioder:
+//		 for(Order ord : db.getOrdersTimePeriod(Instant.parse("2019-05-01" + "T00:00:00.000Z"), Instant.parse("2019-06-01" + "T00:00:00.000Z"), "Malmö")) {
+//			 System.out.println(ord.products + "*");
+//		 }
 	}
 }
