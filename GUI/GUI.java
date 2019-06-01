@@ -72,9 +72,9 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				String id = JOptionPane.showInputDialog("Enter a member's SSN");
 				Member member = controller.findMember(id);
-				String res = "First Name: " + member.fName + "\n Last Name: " + member.lName 
-						+ "\n Adress: " + member.address + "\n Occupation: " + member.occupation + "\n SSN: "
-						+ member.SSN + "\nCoffee Count: " + member.coffeeCount + "\n ID: " + member.id;
+				String res = "First Name: " + member.fName + "\n Last Name: " + member.lName + "\n Adress: "
+						+ member.address + "\n Occupation: " + member.occupation + "\n SSN: " + member.SSN
+						+ "\nCoffee Count: " + member.coffeeCount + "\n ID: " + member.id;
 				JOptionPane.showMessageDialog(null, res);
 			}
 		});
@@ -95,9 +95,11 @@ public class GUI extends JFrame {
 				String loc = JOptionPane.showInputDialog("Enter the location of shop");
 
 				Employee emp = controller.findEmployee(fName, lName, loc);
-				
-				String empInfo = new String("First name: " + emp.fName + "\nLast name: " + emp.lName + "\nLocation address: " + emp.locationID + "\nComment: " + emp.comment + "\nEmployee ID: " + emp.id);
-				
+
+				String empInfo = new String(
+						"First name: " + emp.fName + "\nLast name: " + emp.lName + "\nLocation address: "
+								+ emp.locationID + "\nComment: " + emp.comment + "\nEmployee ID: " + emp.id);
+
 				JOptionPane.showMessageDialog(null, empInfo);
 			}
 		});
@@ -106,7 +108,8 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				String location = JOptionPane.showInputDialog("Enter a employer's location");
 				Employer emp = controller.findEmployer(location);
-				String res = "\n First Name: " + emp.fName + "\n Last Name:" + emp.lName + "\nLocation: " + emp.location.address;
+				String res = "\n First Name: " + emp.fName + "\n Last Name:" + emp.lName + "\nLocation: "
+						+ emp.location.address;
 				JOptionPane.showMessageDialog(null, res);
 
 			}
@@ -117,13 +120,13 @@ public class GUI extends JFrame {
 				String location = JOptionPane.showInputDialog("Location address");
 				ArrayList<Ingredient> stock = controller.getStock(location);
 				StringBuilder sb = new StringBuilder();
-				
-				for(Ingredient i : stock) {
+
+				for (Ingredient i : stock) {
 					sb.append(i.name + ": " + i.quantity + "\n");
 				}
-				
+
 				String fullStock = location + ": \n" + sb.toString();
-				
+
 				JOptionPane.showMessageDialog(null, fullStock);
 			}
 		});
@@ -223,7 +226,8 @@ public class GUI extends JFrame {
 				String occupation = JOptionPane.showInputDialog("Enter a member's occupation");
 				String location = JOptionPane.showInputDialog("At specific location (optional");
 				int sales = controller.salesPerOccupation(occupation, location);
-				JOptionPane.showMessageDialog(null, "Members with " + occupation + " as occupation has done " + sales + " purchases");
+				JOptionPane.showMessageDialog(null,
+						"Members with " + occupation + " as occupation has done " + sales + " purchases");
 			}
 		});
 
@@ -283,7 +287,20 @@ public class GUI extends JFrame {
 		ordersEmpBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String empID = JOptionPane.showInputDialog("Enter the employee's ID");
-
+				String location = JOptionPane.showInputDialog("Enter Location");
+				String strFrom = JOptionPane.showInputDialog("Date from (YYYY-MM-DD)");
+				String strTo = JOptionPane.showInputDialog("Date to (YYYY-MM-DD)");
+				
+				ArrayList<Order> orders = controller.getOrdersByEmployeeOverTime(empID, location, strFrom, strTo);
+				
+				StringBuilder sb = new StringBuilder();
+				sb.append("Orders:\n");
+				
+				for(Order o : orders) {
+					sb.append("Order at " + o.locID + ", Cost: " + o.price + "\n");
+				}
+				
+				JOptionPane.showMessageDialog(null, sb.toString());
 			}
 		});
 
@@ -297,19 +314,24 @@ public class GUI extends JFrame {
 
 			}
 		});
-		
+
 		emplAtLocation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String location = JOptionPane.showInputDialog(null, "Location:");
 				ArrayList<Employee> emps = controller.getAllEmployeesInLocation(location);
 				StringBuilder sb = new StringBuilder();
-				sb.append("Employees in " + location + ":\n");
-				
-				for(Employee emp : emps) {
-					sb.append(emp.fName + " " + emp.lName + "\n");
+
+				if (emps.size() < 1) {
+					sb.append("No employees in " + location);
+				} else {
+					sb.append("Employees in " + location + ":\n");
+
+					for (Employee emp : emps) {
+						sb.append(emp.fName + " " + emp.lName + "\n");
+					}
+
+					JOptionPane.showMessageDialog(null, sb.toString());
 				}
-				
-				JOptionPane.showMessageDialog(null, sb.toString());
 			}
 		});
 
@@ -342,17 +364,18 @@ public class GUI extends JFrame {
 		controller.checkProdSales(products, sDate, eDate);
 	}
 
-//	private String checkStock(ArrayList<Product> prod, ArrayList<JRadioButton> b, String location) {
-//		ArrayList<JRadioButton> buttons = b;
-//		for (int i = 0; i < buttons.size(); i++) {
-//			if (buttons.get(i).isSelected()) {
-//				Product p = prod.get(i);
-////				controller.checkStock(p, sDate, eDate);
-//				
-//				break;
-//			}
-//		}
-//	}
+	// private String checkStock(ArrayList<Product> prod, ArrayList<JRadioButton> b,
+	// String location) {
+	// ArrayList<JRadioButton> buttons = b;
+	// for (int i = 0; i < buttons.size(); i++) {
+	// if (buttons.get(i).isSelected()) {
+	// Product p = prod.get(i);
+	//// controller.checkStock(p, sDate, eDate);
+	//
+	// break;
+	// }
+	// }
+	// }
 
 	private void checkProduct(String[] prod, ArrayList<JRadioButton> b, String sDate, String eDate) {
 		String[] products = prod;
@@ -371,7 +394,7 @@ public class GUI extends JFrame {
 		final Frame oFrame = new Frame("Order");
 		oFrame.setVisible(false);
 		JButton backBtn = new JButton("Back");
-//		JLabel lblId = new JLabel("Order ID:");
+		// JLabel lblId = new JLabel("Order ID:");
 		JLabel lblEmpId = new JLabel("Employee Full Name:");
 		JLabel lblLocId = new JLabel("Location Address:");
 		JLabel lblMemId = new JLabel("Member SSN");
@@ -435,14 +458,13 @@ public class GUI extends JFrame {
 				for (int i = 0; i < orderedProducts.size(); i++) {
 					System.out.println(orderedProducts.get(i).name);
 				}
-				
+
 				String[] fullName = tfEmpId.getText().split(" ");
-				
+
 				Employee emp = controller.findEmployee(fullName[0], fullName[1], tfLocId.getText());
-				
-				Order order = new Order(null, emp.id, tfLocId.getText(), tfMemId.getText(),
-						orderedProducts);
-				
+
+				Order order = new Order(null, emp.id, tfLocId.getText(), tfMemId.getText(), orderedProducts);
+
 				controller.addOrder(order);
 
 			}
@@ -456,8 +478,8 @@ public class GUI extends JFrame {
 		});
 
 		orderFrame.setLayout(new GridLayout(8, 2));
-//		orderFrame.add(lblId);
-//		orderFrame.add(tfId);
+		// orderFrame.add(lblId);
+		// orderFrame.add(tfId);
 		orderFrame.add(lblEmpId);
 		orderFrame.add(tfEmpId);
 		orderFrame.add(lblLocId);
@@ -475,70 +497,71 @@ public class GUI extends JFrame {
 		orderFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 
-	private void addIngredient() {final JFrame ingredientFrame = new JFrame("Add Ingredient");
-	final ArrayList<Location> locations = controller.getLocations();
-	 String[] loco = new String[locations.size()];
-	 for(int i = 0; i < locations.size();i++) {
-	 loco[i] = locations.get(i).address;
-	 System.out.println(locations.get(i).address);
-//	 System.out.println(locations.get(i).country);
-	 }
+	private void addIngredient() {
+		final JFrame ingredientFrame = new JFrame("Add Ingredient");
+		final ArrayList<Location> locations = controller.getLocations();
+		String[] loco = new String[locations.size()];
+		for (int i = 0; i < locations.size(); i++) {
+			loco[i] = locations.get(i).address;
+			System.out.println(locations.get(i).address);
+			// System.out.println(locations.get(i).country);
+		}
 
-	final JComboBox cbLocation = new JComboBox(loco);
-	JButton addBtn = new JButton("Add Ingredient");
-	JButton backBtn = new JButton("Back");
-	JLabel lblName = new JLabel("Ingredient name:");
-	JLabel lblPrice = new JLabel("Price:");
-	JLabel lblQuantity = new JLabel("Quantity:");
-	JLabel lblLocations = new JLabel("Location");
-	final JTextField tfName = new JTextField();
-	final JTextField tfPrice = new JTextField();
-	final JTextField tfQuan = new JTextField();
-	ingredientFrame.dispatchEvent(new WindowEvent(ingredientFrame, WindowEvent.WINDOW_CLOSING));
-	ingredientFrame.setLocation(dim.width / 2 - ingredientFrame.getSize().width / 2,
-			dim.height / 2 - ingredientFrame.getSize().height / 2);
+		final JComboBox cbLocation = new JComboBox(loco);
+		JButton addBtn = new JButton("Add Ingredient");
+		JButton backBtn = new JButton("Back");
+		JLabel lblName = new JLabel("Ingredient name:");
+		JLabel lblPrice = new JLabel("Price:");
+		JLabel lblQuantity = new JLabel("Quantity:");
+		JLabel lblLocations = new JLabel("Location");
+		final JTextField tfName = new JTextField();
+		final JTextField tfPrice = new JTextField();
+		final JTextField tfQuan = new JTextField();
+		ingredientFrame.dispatchEvent(new WindowEvent(ingredientFrame, WindowEvent.WINDOW_CLOSING));
+		ingredientFrame.setLocation(dim.width / 2 - ingredientFrame.getSize().width / 2,
+				dim.height / 2 - ingredientFrame.getSize().height / 2);
 
-	addBtn.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			String country = cbLocation.getSelectedItem().toString();
-			Location location = new Location("","","");
-			for(int i = 0; i < locations.size(); i++) {
-				if(country == locations.get(i).address) {
-					location = locations.get(i);
+		addBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String country = cbLocation.getSelectedItem().toString();
+				Location location = new Location("", "", "");
+				for (int i = 0; i < locations.size(); i++) {
+					if (country == locations.get(i).address) {
+						location = locations.get(i);
+					}
 				}
+				// add to db
+				controller.addIngredient(tfName.getText(), Double.valueOf(tfPrice.getText()),
+						Double.valueOf(tfQuan.getText()), location);
+				ingredientFrame.setVisible(false);
+				new GUI();
 			}
-			// add to db
-			controller.addIngredient(tfName.getText(), Double.valueOf(tfPrice.getText()),
-					Double.valueOf(tfQuan.getText()), location);
-			ingredientFrame.setVisible(false);
-			new GUI();
-		}
-	});
+		});
 
-	backBtn.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			ingredientFrame.setVisible(false);
-			new GUI();
-		}
-	});
+		backBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ingredientFrame.setVisible(false);
+				new GUI();
+			}
+		});
 
-	ingredientFrame.setLayout(new GridLayout(6, 2));
-	ingredientFrame.add(lblName);
-	ingredientFrame.add(tfName);
-	ingredientFrame.add(lblPrice);
-	ingredientFrame.add(tfPrice);
-	ingredientFrame.add(lblQuantity);
-	ingredientFrame.add(tfQuan);
-	ingredientFrame.add(lblLocations);
-	ingredientFrame.add(cbLocation);
+		ingredientFrame.setLayout(new GridLayout(6, 2));
+		ingredientFrame.add(lblName);
+		ingredientFrame.add(tfName);
+		ingredientFrame.add(lblPrice);
+		ingredientFrame.add(tfPrice);
+		ingredientFrame.add(lblQuantity);
+		ingredientFrame.add(tfQuan);
+		ingredientFrame.add(lblLocations);
+		ingredientFrame.add(cbLocation);
 
-	ingredientFrame.add(addBtn);
-	ingredientFrame.add(backBtn);
+		ingredientFrame.add(addBtn);
+		ingredientFrame.add(backBtn);
 
-	ingredientFrame.setSize(400, 300);
-	ingredientFrame.setVisible(true);
-	ingredientFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-}
+		ingredientFrame.setSize(400, 300);
+		ingredientFrame.setVisible(true);
+		ingredientFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+	}
 
 	private void makeComment() {
 		final JFrame commentFrame = new JFrame("Make Comment");
@@ -562,9 +585,10 @@ public class GUI extends JFrame {
 					JOptionPane.showMessageDialog(null, "Comment cannot be longer than 300 chars");
 				} else {
 					String[] fullName = employeeName.getText().split(" ");
-					
-					controller.addComment(tfBy.getText(), fullName[0], fullName[1], tfLocation.getText(), comment.getText());
-					
+
+					controller.addComment(tfBy.getText(), fullName[0], fullName[1], tfLocation.getText(),
+							comment.getText());
+
 					commentFrame.setVisible(false);
 					new GUI();
 				}
@@ -600,18 +624,19 @@ public class GUI extends JFrame {
 		JButton backBtn = new JButton("Back");
 		JLabel lblFName = new JLabel("First Name:");
 		JLabel lblLName = new JLabel("Last Name:");
-		 JLabel lblLocation = new JLabel("Employer Location:");
+		JLabel lblLocation = new JLabel("Employer Location:");
 		final JTextField tfFName = new JTextField();
 		final JTextField tfLName = new JTextField();
-		 final JTextField tfLocation = new JTextField();
+		final JTextField tfLocation = new JTextField();
 		employerFrame.dispatchEvent(new WindowEvent(employerFrame, WindowEvent.WINDOW_CLOSING));
 		employerFrame.setLocation(dim.width / 2 - employerFrame.getSize().width / 2,
 				dim.height / 2 - employerFrame.getSize().height / 2);
 
 		addBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-//				Controller.addEmployer(tfFName.getText(), tfLName.getText());
-				controller.addEmployer(tfFName.getText(), tfLName.getText(), Controller.findLocation(tfLocation.getText()));
+				// Controller.addEmployer(tfFName.getText(), tfLName.getText());
+				controller.addEmployer(tfFName.getText(), tfLName.getText(),
+						Controller.findLocation(tfLocation.getText()));
 				employerFrame.setVisible(false);
 				new GUI();
 			}
@@ -629,8 +654,8 @@ public class GUI extends JFrame {
 		employerFrame.add(tfFName);
 		employerFrame.add(lblLName);
 		employerFrame.add(tfLName);
-		 employerFrame.add(lblLocation);
-		 employerFrame.add(tfLocation);
+		employerFrame.add(lblLocation);
+		employerFrame.add(tfLocation);
 		employerFrame.add(addBtn);
 		employerFrame.add(backBtn);
 

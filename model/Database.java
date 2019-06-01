@@ -23,7 +23,7 @@ import java.sql.*;
 
 public class Database {
 	private MongoClient client;
-	private DB database;
+	private static DB database;
 
 	public Database() {
 		try {
@@ -262,14 +262,17 @@ public class Database {
 		addCoffeeCount(findMember(o.memID));
 	}
 
-	public Order findOrder(String id) {
+	public static Order findOrder(String id) {
 		DBCollection collection = database.getCollection("order");
-		DBObject query = new BasicDBObject("_id", id);
+		// DBObject query = new BasicDBObject("_id", id);
+		DBObject query = new BasicDBObject("_id", new ObjectId(id));
 		DBCursor cursor = collection.find(query);
 
 		ArrayList<Product> products = new ArrayList<Product>();
 
 		DBObject order = cursor.one();
+
+		System.out.println(order);
 
 		ArrayList<DBObject> productsInOrder = (ArrayList) order.get(("products"));
 
@@ -483,7 +486,6 @@ public class Database {
 
 		if (!location.equals("")) {
 			query.append("locID", location);
-
 		}
 
 		DBCursor cursor = collection.find(query);
@@ -518,9 +520,9 @@ public class Database {
 		return numOfItems;
 	}
 
-	public ArrayList<Order> getOrdersByEmployee(Instant from, Instant to, String location, String emp) {
+	public static ArrayList<Order> getOrdersByEmployee(Instant from, Instant to, String location, String emp) {
 		ArrayList<Order> orders = new ArrayList<Order>();
-		DBCollection collection = database.getCollection("Location");
+		DBCollection collection = database.getCollection("order");
 
 		BasicDBObject query = new BasicDBObject("_ts",
 				new BasicDBObject("$gt", from.toString()).append("$lte", to.toString()));
@@ -529,13 +531,10 @@ public class Database {
 		query.append("empID", emp);
 
 		DBCursor cursor = collection.find(query);
+
 		while (cursor.hasNext()) {
 			DBObject DBOrder = cursor.next();
-
-			ArrayList<Product> products = new ArrayList<Product>();
-
 			Order order = findOrder(DBOrder.get("_id").toString());
-
 			orders.add(order);
 		}
 
@@ -628,16 +627,7 @@ public class Database {
 		// System.out.println(ord.products);
 		// }
 
-		// System.out.println(db.getNumberOfSalesOccupation("Student", "Malmö"));
-		// System.out.println(db.getStockForItem("Espresso Roast", "Malmö"));
-
 		// KOLLA:
-
-		// GetAllEmployees
-		System.out.println(db.getAllEmployees("Malmö"));
-
-		// getOrdersByEmployee
-		// getStockForItem
 		// getNumbersOfSpecificItem
 
 		System.out.println("X");

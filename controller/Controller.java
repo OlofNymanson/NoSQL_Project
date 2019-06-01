@@ -1,5 +1,6 @@
 package controller;
 
+import java.time.Instant;
 import java.util.ArrayList;
 
 import model.*;
@@ -119,5 +120,9 @@ public class Controller {
 	public static String getItemInLocation(String item, String location) {
 		int numOfItem = dbHelper.getStockForItem(item, location);
 		return numOfItem + " " + item + " in " + location;
+	}
+	
+	public static ArrayList<Order> getOrdersByEmployeeOverTime(String employeeID, String location, String timeFrom, String timeTo){
+		return dbHelper.getOrdersByEmployee(Instant.parse(timeFrom + "T00:00:00.000Z"), Instant.parse(timeTo + "T00:00:00.000Z"), location, employeeID);
 	}
 }
