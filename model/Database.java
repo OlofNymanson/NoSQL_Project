@@ -49,7 +49,7 @@ public class Database {
 		Member m = new Member(cursor.one().get("_id").toString(), (String) cursor.one().get("fName"),
 				(String) cursor.one().get("lName"), (String) cursor.one().get("address"),
 				(String) cursor.one().get("occupation"), (String) cursor.one().get("SSN"));
-		
+
 		m.coffeeCount = Integer.parseInt(cursor.one().get("coffeeCount").toString());
 
 		return m;
@@ -71,10 +71,10 @@ public class Database {
 
 		try {
 			emp.comment = (String) cursor.one().get("comment");
-		}catch(Exception ex) {
-			
+		} catch (Exception ex) {
+
 		}
-		
+
 		return emp;
 	}
 
@@ -129,7 +129,7 @@ public class Database {
 		ArrayList<Ingredient> locationStock = getStock(l);
 
 		if (alreadyInStock(locationStock, ingredient.name)) {
-			
+
 			locQuery = new BasicDBObject("address", l.address).append("stock",
 					new BasicDBObject("$elemMatch", new BasicDBObject("name", ingredient.name)));
 
@@ -238,13 +238,12 @@ public class Database {
 		DBCollection collection = database.getCollection("order");
 
 		ArrayList<DBObject> products = new ArrayList<DBObject>();
-		
+
 		try {
 			takeFromStock(o);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 
 		for (Product p : o.products) {
 			ArrayList<DBObject> ingredients = new ArrayList<DBObject>();
@@ -257,10 +256,9 @@ public class Database {
 			products.add(new BasicDBObject("_id", p.id).append("name", p.name).append("ingredients", ingredients));
 		}
 
-		collection.insert(new BasicDBObject("empID", o.empID).append("locID", o.locID)
-				.append("memID", o.memID).append("_ts", o.ts.toString()).append("price", o.price)
-				.append("products", products));
-		
+		collection.insert(new BasicDBObject("empID", o.empID).append("locID", o.locID).append("memID", o.memID)
+				.append("_ts", o.ts.toString()).append("price", o.price).append("products", products));
+
 		addCoffeeCount(findMember(o.memID));
 	}
 
@@ -545,28 +543,23 @@ public class Database {
 
 	}
 
-	public ArrayList<String> getAllEmployees(String location) {
-		ArrayList<String> emps = new ArrayList<String>();
+	public ArrayList<Employee> getAllEmployees(String location) {
+		ArrayList<Employee> emps = new ArrayList<Employee>();
 		DBCollection collection = database.getCollection("Employee");
 
-		BasicDBObject query = new BasicDBObject("address", location);
+		BasicDBObject query = new BasicDBObject("location", location);
 
 		DBCursor cursor = collection.find(query);
 
 		while (cursor.hasNext()) {
-			DBObject emp = cursor.next();
-			String empInfo = "";
-			empInfo += emp.get("fName").toString();
-			empInfo += " ";
-			empInfo += emp.get("lName").toString();
-			emps.add(empInfo);
+			DBObject dboEmp = cursor.next();
+			Employee emp = new Employee(dboEmp.get("_id").toString(), dboEmp.get("fName").toString(),
+					dboEmp.get("lName").toString(), dboEmp.get("location").toString());
+			emps.add(emp);
 		}
 
 		return emps;
-
 	}
-	
-
 
 	public static void main(String[] args) {
 		Database db = new Database();
@@ -574,7 +567,7 @@ public class Database {
 		// db.init(); // Kommer att dubbla alla produkter om körs flera gånger.
 
 		// //ADD EMPLOYEE - FUNKAR
-//		db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "PISA"));
+		// db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "PISA"));
 		// System.out.println(db.findEmployee("Gustav", "von Flemming",
 		// "London").fName);
 
@@ -625,8 +618,7 @@ public class Database {
 		// }
 
 		// Comment - FUNKAR
-//		db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
-
+		// db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
 
 		// Mellan tidsperioder:
 		// Instant time = Instant.now();
@@ -636,11 +628,17 @@ public class Database {
 		// System.out.println(ord.products);
 		// }
 
-		// TROR FUNKAR
-//		 System.out.println(db.getNumberOfSalesOccupation("Student", "Malmö"));
-//		System.out.println(db.getStockForItem("Espresso Roast", "Malmö"));
-		
-		
+		// System.out.println(db.getNumberOfSalesOccupation("Student", "Malmö"));
+		// System.out.println(db.getStockForItem("Espresso Roast", "Malmö"));
+
+		// KOLLA:
+
+		// GetAllEmployees
+		System.out.println(db.getAllEmployees("Malmö"));
+
+		// getOrdersByEmployee
+		// getStockForItem
+		// getNumbersOfSpecificItem
 
 		System.out.println("X");
 	}

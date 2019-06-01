@@ -108,6 +108,10 @@ public class Controller {
 		return sales;
 	}
 	
+	public static ArrayList<Employee> getAllEmployeesInLocation(String location){
+		return dbHelper.getAllEmployees(location);
+	}
+	
 	public static void checkStock(Product p, String sDate, String eDate) {
 		System.out.println("Product selected: " + p.name + " Start date: " + sDate + " End date: " + eDate);
 	}

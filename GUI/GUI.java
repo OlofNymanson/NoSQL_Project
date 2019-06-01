@@ -193,7 +193,7 @@ public class GUI extends JFrame {
 		JButton salesCustBtn = new JButton("Sales per member by occupation");
 		JButton stockQuanBtn = new JButton("Stock quantities");
 		JButton ordersEmpBtn = new JButton("Orders by a employee over time");
-		JButton emplTimeBtn = new JButton("Employees listing over time");
+		JButton emplAtLocation = new JButton("All employees in location");
 		JButton custTimeBtn = new JButton("Customers listing over time");
 		JLabel hahaa = new JLabel("Products");
 		// final ButtonGroup bg = new ButtonGroup();
@@ -297,6 +297,21 @@ public class GUI extends JFrame {
 
 			}
 		});
+		
+		emplAtLocation.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String location = JOptionPane.showInputDialog(null, "Location:");
+				ArrayList<Employee> emps = controller.getAllEmployeesInLocation(location);
+				StringBuilder sb = new StringBuilder();
+				sb.append("Employees in " + location + ":\n");
+				
+				for(Employee emp : emps) {
+					sb.append(emp.fName + " " + emp.lName + "\n");
+				}
+				
+				JOptionPane.showMessageDialog(null, sb.toString());
+			}
+		});
 
 		reportFrame.setLayout(new GridLayout(8, 1));
 		reportFrame.add(salesTimeBtn);
@@ -305,7 +320,7 @@ public class GUI extends JFrame {
 		reportFrame.add(salesCustBtn);
 		reportFrame.add(stockQuanBtn);
 		reportFrame.add(ordersEmpBtn);
-		reportFrame.add(emplTimeBtn);
+		reportFrame.add(emplAtLocation);
 		reportFrame.add(custTimeBtn);
 		reportFrame.add(backBtn);
 
