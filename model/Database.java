@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Filter;
 
+import javax.swing.JOptionPane;
+
 import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
@@ -254,10 +256,16 @@ public class Database {
 			products.add(new BasicDBObject("_id", p.id).append("name", p.name).append("ingredients", ingredients));
 		}
 
+		addCoffeeCount(findMember(o.memID));
+		
+		if(freeCoffee(findMember(o.memID))) {
+			o.price = 0;
+			JOptionPane.showMessageDialog(null, "10th order is free!");
+		}
+		
 		collection.insert(new BasicDBObject("empID", o.empID).append("locID", o.locID).append("memID", o.memID)
 				.append("_ts", o.ts.toString()).append("price", o.price).append("products", products));
 
-		addCoffeeCount(findMember(o.memID));
 	}
 
 	public static Order findOrder(String id) {
@@ -316,7 +324,7 @@ public class Database {
 
 	private int getCoffeeCount(Member member) {
 		DBCollection collection = database.getCollection("Member");
-		DBObject query = new BasicDBObject("_id", member.id);
+		DBObject query = new BasicDBObject("_id", new ObjectId(member.id));
 		DBCursor cursor = collection.find(query);
 		return (Integer) cursor.one().get("coffeeCount");
 	}

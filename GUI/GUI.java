@@ -368,14 +368,12 @@ public class GUI extends JFrame {
 		final Frame oFrame = new Frame("Order");
 		oFrame.setVisible(false);
 		JButton backBtn = new JButton("Back");
-		// JLabel lblId = new JLabel("Order ID:");
 		JLabel lblEmpId = new JLabel("Employee Full Name:");
 		JLabel lblLocId = new JLabel("Location Address:");
 		JLabel lblMemId = new JLabel("Member SSN");
 		JButton oBack = new JButton("Done");
 		JButton addProdBtn = new JButton("Add products");
 		String[] names = new String[100];
-		// String[] products = controller.getProducts();
 		final ArrayList<Product> products = controller.getProducts();
 		final ArrayList<Product> orderedProducts = new ArrayList<Product>();
 		for (int i = 0; i < products.size(); i++) {
@@ -419,7 +417,6 @@ public class GUI extends JFrame {
 						taProducts.append(selected + "\n");
 					}
 				}
-
 			}
 		});
 
