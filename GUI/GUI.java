@@ -393,7 +393,6 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				ts = new Timestamp(System.currentTimeMillis());
 				orderFrame.setVisible(false);
-				System.out.println(ts.toString());
 				new GUI();
 				for (int i = 0; i < orderedProducts.size(); i++) {
 					System.out.println(orderedProducts.get(i).name);

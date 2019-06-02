@@ -557,9 +557,9 @@ public class Database {
 	}
 
 	//DO NOT USE FOR RUNNING APPLICATION
-//	public static void main(String[] args) {
-//		Database db = new Database();
-//
-//		db.init();
-//	}
+	public static void main(String[] args) {
+		Database db = new Database();
+		db.init();
+		System.out.println("DATABASE INITIALIZED");
+	}
 }
