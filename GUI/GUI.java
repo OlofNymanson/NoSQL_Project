@@ -18,8 +18,6 @@ import javax.swing.*;
 import controller.Controller;
 import model.*;
 
-//import controller.Controller;
-
 public class GUI extends JFrame {
 
 	private Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -32,7 +30,6 @@ public class GUI extends JFrame {
 		frame.setLayout(new GridLayout(0, 1));
 		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
 
-		// JLabel beaver = new JLabel("BEAVERCOFFEE");
 		JButton addMemberBtn = new JButton("Add member");
 		JButton employeeBtn = new JButton("Add employee");
 		JButton locationBtn = new JButton("Add location");
@@ -166,7 +163,6 @@ public class GUI extends JFrame {
 			}
 		});
 
-		// frame.add(beaver);
 		frame.add(makeOrderBtn);
 		frame.add(addMemberBtn);
 		frame.add(findMemberBtn);
@@ -181,12 +177,10 @@ public class GUI extends JFrame {
 		frame.add(commentBtn);
 		frame.add(makeReportBtn);
 		frame.setVisible(true);
-		// frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 	}
 
-	// väntar med punkt 2 & 4
 	private void makeReport() {
 		final JFrame reportFrame = new JFrame("Make a report");
 		JButton backBtn = new JButton("Back");
@@ -199,7 +193,6 @@ public class GUI extends JFrame {
 		JButton emplAtLocation = new JButton("All employees in location");
 		JButton custTimeBtn = new JButton("Customers listing over time");
 		JLabel hahaa = new JLabel("Products");
-		// final ButtonGroup bg = new ButtonGroup();
 
 		reportFrame.dispatchEvent(new WindowEvent(reportFrame, WindowEvent.WINDOW_CLOSING));
 		reportFrame.setLocation(dim.width / 2 - reportFrame.getSize().width / 2,
@@ -326,30 +319,6 @@ public class GUI extends JFrame {
 		reportFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 
-//	private void checkProdSales(ArrayList<Product> prod, ArrayList<JRadioButton> b, String sDate, String eDate) {
-//		ArrayList<JRadioButton> buttons = b;
-//		ArrayList<Product> products = new ArrayList<Product>();
-//		for (int i = 0; i < buttons.size(); i++) {
-//			if (buttons.get(i).isSelected()) {
-//				products.add(prod.get(i));
-//
-//			}
-//		}
-//		controller.checkProdSales(products, sDate, eDate);
-//	}
-
-	// private String checkStock(ArrayList<Product> prod, ArrayList<JRadioButton> b,
-	// String location) {
-	// ArrayList<JRadioButton> buttons = b;
-	// for (int i = 0; i < buttons.size(); i++) {
-	// if (buttons.get(i).isSelected()) {
-	// Product p = prod.get(i);
-	//// controller.checkStock(p, sDate, eDate);
-	//
-	// break;
-	// }
-	// }
-	// }
 
 	private void checkProduct(String[] prod, ArrayList<JRadioButton> b, String sDate, String eDate) {
 		String[] products = prod;
@@ -449,8 +418,6 @@ public class GUI extends JFrame {
 		});
 
 		orderFrame.setLayout(new GridLayout(8, 2));
-		// orderFrame.add(lblId);
-		// orderFrame.add(tfId);
 		orderFrame.add(lblEmpId);
 		orderFrame.add(tfEmpId);
 		orderFrame.add(lblLocId);
@@ -458,8 +425,6 @@ public class GUI extends JFrame {
 		orderFrame.add(lblMemId);
 		orderFrame.add(tfMemId);
 		orderFrame.add(addProdBtn);
-		// locationFrame.add(cbProducts);
-		// locationFrame.add(taProducts);
 		orderFrame.add(addBtn);
 		orderFrame.add(backBtn);
 
@@ -475,7 +440,6 @@ public class GUI extends JFrame {
 		for (int i = 0; i < locations.size(); i++) {
 			loco[i] = locations.get(i).address;
 			System.out.println(locations.get(i).address);
-			// System.out.println(locations.get(i).country);
 		}
 
 		final JComboBox cbLocation = new JComboBox(loco);
@@ -605,7 +569,6 @@ public class GUI extends JFrame {
 
 		addBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Controller.addEmployer(tfFName.getText(), tfLName.getText());
 				controller.addEmployer(tfFName.getText(), tfLName.getText(),
 						Controller.findLocation(tfLocation.getText()));
 				employerFrame.setVisible(false);
@@ -773,9 +736,10 @@ public class GUI extends JFrame {
 		memberFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 
+	/*
+	 * USE THIS MAIN FOR RUNNING APPLICATION
+	 */
 	public static void main(String[] args) {
-		// new StartGUI();
 		new GUI();
 	}
-
 }

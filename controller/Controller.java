@@ -35,7 +35,6 @@ public class Controller {
 	}
 	
 	public static void addEmployer(String firstName, String lastName, Location location) {
-//		Employer e = new Employer(null, firstName, lastName);
 		Employer e = new Employer(firstName, lastName, location);
 		dbHelper.addEmployer(e);
 	}
@@ -62,16 +61,7 @@ public class Controller {
 	
 	public static void addOrder(Order o) {
 		dbHelper.createOrder(o);
-		for (int i = 0; i < o.products.size();i++) {
-			System.out.println("Product " + i + o.products.get(i));
-		}
 	}
-	
-//	public static String findEmployee(String fName, String lName, String location) {
-//		Employee emp = dbHelper.findEmployee(fName, lName, location);
-//		String res = "Fname: " + emp.fName + "\nLname: " + emp.lName + "\n Location ID: " + emp.locationID;
-//		return res;
-//	}
 	
 	public static Employee findEmployee(String fName, String lName, String location) {
 		Employee emp = dbHelper.findEmployee(fName, lName, location);
@@ -110,18 +100,12 @@ public class Controller {
 		return dbHelper.getAllEmployees(location);
 	}
 	
-	public static void checkStock(Product p, String sDate, String eDate) {
-		System.out.println("Product selected: " + p.name + " Start date: " + sDate + " End date: " + eDate);
-	}
-	
 	public static String getItemInLocation(String item, String location) {
 		int numOfItem = dbHelper.getStockForItem(item, location);
 		return numOfItem + " " + item + " in " + location;
 	}
 	
 	public static ArrayList<Order> getOrdersByEmployeeOverTime(String employeeID, String location, String timeFrom, String timeTo){
-		System.out.println("X");
-		
 		return dbHelper.getOrdersByEmployee(Instant.parse(timeFrom + "T00:00:00.000Z"), Instant.parse(timeTo + "T00:00:00.000Z"), location, employeeID);
 	}
 	

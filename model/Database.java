@@ -91,10 +91,6 @@ public class Database {
 		DBObject query = new BasicDBObject("location", location);
 		DBCursor cursor = collection.find(query);
 
-		// Employer emp = new Employer((String) cursor.one().get("_id"), (String)
-		// cursor.one().get("fName"),
-		// (String) cursor.one().get("lName"));
-
 		Employer emp = new Employer((String) cursor.one().get("fName"), (String) cursor.one().get("lName"),
 				findLocation((String) cursor.one().get("location")));
 
@@ -145,9 +141,7 @@ public class Database {
 			}
 
 			update = new BasicDBObject("$set",
-					new BasicDBObject("stock.$.quantity", currentQuantity + ingredient.quantity)); // find current
-																									// ingredient
-																									// quantity and add
+					new BasicDBObject("stock.$.quantity", currentQuantity + ingredient.quantity)); // find current ingredient quantity and add
 
 		} else {
 			locQuery = new BasicDBObject("address", l.address);
@@ -217,7 +211,7 @@ public class Database {
 
 	private boolean enoughIngredientsInStock(Order order) {
 		ArrayList<Ingredient> locationStock = getStock(findLocation(order.locID));
-
+		
 		// förlåt
 		for (Ingredient ingredientInStock : locationStock) {
 			for (Product p : order.products) {
@@ -296,7 +290,6 @@ public class Database {
 				cursor.one().get("locID").toString(), cursor.one().get("memID").toString(), products);
 
 		return o;
-
 	}
 
 	// is added for every order
@@ -563,68 +556,10 @@ public class Database {
 		return emps;
 	}
 
-	public static void main(String[] args) {
-		Database db = new Database();
-
-		// db.init(); // Kommer att dubbla alla produkter om körs flera gånger.
-
-		// //ADD EMPLOYEE - FUNKAR
-		// db.addEmployee(new Employee("emp_olny95", "Olof", "Nymansson", "PISA"));
-		// System.out.println(db.findEmployee("Gustav", "von Flemming",
-		// "London").fName);
-
-		// //ADD MEMBER - FUNKAR
-		// db.addMember(new Member("osar93", "Oscar", "Arréhn", "Hittepågatan",
-		// "Student", "1993-02-11"));
-		// Member m = db.findMember("19980901");
-		// System.out.println(m.fName + ", " + m.address);
-
-		// //Add Location - FUNKAR
-		// Location l = new Location("loc_malmö2", "Storgatan 2", "Skåneland");
-		// db.addLocation(l);
-
-		// //Find Location - FUNKAR
-		// Location fl = db.findLocation("Malmö"); //adress
-		// System.out.println(fl.country);
-
-		// Add Order - FUNKAR
-		// ArrayList<Product> products = new ArrayList<Product>();
-		// ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
-		// ingredients.add(new Ingredient("milk", 2.5, 3));
-		// ingredients.add(new Ingredient("beans", 2.5, 3));
-		// products.add(new Product("p1", "coffee", ingredients));
-		// Location fl = db.findLocation("Malmö");
-		// Employee fe = db.findEmployee("Gustav", "von Flemming", "London");
-		// Member fm = db.findMember("19910109"); // MUST USE SSN
-		// Order o = new Order("ord_220", fe.id, fl.id, fm.SSN, products);
-		// db.createOrder(o);
-		// System.out.println(o.id);
-
-		// Find Order - FUNKAR
-		// Order o = db.findOrder("ord_99");
-		// System.out.println(o.memID + ", " + o.price);
-
-		// Take from stock: - FUNKAR
-		// ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
-		// ArrayList<Product> products = new ArrayList<Product>();
-		//
-		// ingredients.add(new Ingredient("Cream", 2.5, 100));
-		// ingredients.add(new Ingredient("Caramel", 2.5, 100));
-		//
-		// products.add(new Product("1", "Coffee", ingredients));
-		//
-		// try {
-		// db.takeFromStock(new Order("1", "1", "Malmö", "1", products));
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
-
-		// Comment - FUNKAR
-		// db.addComment(new Comment("The employer", "emp_olny95", "Good job!"));
-
-//		 Mellan tidsperioder:
-//		 for(Order ord : db.getOrdersTimePeriod(Instant.parse("2019-05-01" + "T00:00:00.000Z"), Instant.parse("2019-06-01" + "T00:00:00.000Z"), "Malmö")) {
-//			 System.out.println(ord.products + "*");
-//		 }
-	}
+	//DO NOT USE FOR RUNNING APPLICATION
+//	public static void main(String[] args) {
+//		Database db = new Database();
+//
+//		db.init();
+//	}
 }
